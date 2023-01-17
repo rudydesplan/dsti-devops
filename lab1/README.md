@@ -2,5 +2,4 @@
 
 This is the first change and commit
 
-
-Desplan Rudy
+Rudy Desplan
