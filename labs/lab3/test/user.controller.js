@@ -36,12 +36,22 @@ describe('User', () => {
       })
     })
 
-    // it('avoid creating an existing user', (done)=> {
-    //   // TODO create this test
-    //   // Warning: the user already exists
-    //   done()
-    // })
-  })
+    it('avoid creating an existing user', (done)=> {
+       // TODO create this test
+       // Warning: the user already exists
+       const userTwo = {
+        username: 'mouh06',
+        firstname: 'mohamed',
+        lastname: 'hamiche'
+      }
+      userController.create(userTwo, (err, result) => {
+        userController.create(userTwo, (err, result) => {
+          expect(err).to.not.be.equal(null)
+          expect(result).to.be.equal(null)
+          done()
+     })
+    })
+    })
 
   // TODO Create test for the get method
   // describe('Get', ()=> {
@@ -58,4 +68,5 @@ describe('User', () => {
   //   })
   //
   // })
+  })
 })
