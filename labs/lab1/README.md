@@ -2,4 +2,6 @@
 
 This is the first change and commit
 
-Mohamed Hamiche
+
+Rudy Desplan
+
