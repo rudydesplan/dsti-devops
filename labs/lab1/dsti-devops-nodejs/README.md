@@ -1,5 +1,5 @@
 # My first Node JS Application
-
+## Lab instructions + Personal notes
 The lab's objective is to write clean and high-quality source code and it's documentation following best practices.
 
 ## Use case: Node.js application
