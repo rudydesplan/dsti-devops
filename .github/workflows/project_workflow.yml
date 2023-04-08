@@ -25,6 +25,8 @@ jobs:
 
     - name: Start Flask API
       working-directory: ./flask-api
+      env:
+        PYTHONPATH: "${PYTHONPATH}:/modules"
       run: python service/service.py &
       # The '&' character runs the command in the background so the script can continue.
 
@@ -33,6 +35,4 @@ jobs:
 
     - name: Run tests
       working-directory: ./flask-api
-      env:
-        PYTHONPATH: "${PYTHONPATH}:/modules"
       run: pytest tests/
