@@ -26,6 +26,7 @@ It will start a web server available in your browser at http://localhost:5000.
 ![index.html](images/index.png)
 
 2. Prepare a CSV file
+
 The file to prepare is in 'datastets' directory, it is a mounted docker volume.
 
 Click on 'Prepare CSV file', or
@@ -39,15 +40,19 @@ curl --header "Content-Type: application/json" \
 ```
 
 You can check the logs while data is prepared
+
 ![index.html](images/logs.png)
 
 It will output a JSON file.
+
 ![index.html](images/output.png)
 
 3. Prepare a single row from the CSV file
+
 Input the row number and click 'Prepare', or
 
 Send a GET (REST protocol) request using terminal from the root directory of the project:
+
 replace <index> by the row number you want to prepare
 ```bash
 curl --header "Content-Type: application/json" \
@@ -56,6 +61,7 @@ curl --header "Content-Type: application/json" \
 ```
 
 It will output a JSON file with one element.
+
 ![index.html](images/output_row.png)
 
 
