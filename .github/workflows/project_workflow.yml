@@ -33,4 +33,6 @@ jobs:
 
     - name: Run tests
       working-directory: ./flask-api
+      env:
+        PYTHONPATH: "${PYTHONPATH}:/modules"
       run: pytest tests/
