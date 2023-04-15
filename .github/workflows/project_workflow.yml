@@ -21,14 +21,12 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./flask-api
-      run: pip install -r requirements.txt
+      run:
+        - pip install -r requirements.txt && python setup.py install
 
     - name: Start Flask API
       working-directory: ./flask-api
-      env:
-        PYTHONPATH: "${PYTHONPATH}:/modules"
       run: python service/service.py &
-      # The '&' character runs the command in the background so the script can continue.
 
     - name: Wait for API to start up
       run: sleep 5
