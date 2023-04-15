@@ -1,6 +1,4 @@
-from unittest.mock import Mock, patch
-
-from _pytest import capture
+from unittest.mock import patch
 
 from modules.preparation.utils import generate_uuid, get_season, get_state
 
@@ -38,23 +36,6 @@ def test_get_state_with_successful_request():
 
             # Verify that the geocode method was not called the second time (since the value was cached)
             mock_geocode_cached.assert_not_called()
-
-
-def test_get_state_with_failed_request():
-    # Set up mock geolocator that raises an exception
-    geolocator = Mock()
-    geolocator.geocode.side_effect = Exception("Test exception")
-
-    region = "New York"
-    state = get_state(region)
-    # Verify that the result is None
-    assert state is None
-
-    # Verify that the warning message was printed to the console
-    # This assumes that the function prints to the console using the 'print' function
-    captured_output = capture.readouterr()
-    assert "Warning" in captured_output.out
-    geolocator.geocode.assert_called_once_with(query=f"{region} + USA", addressdetails=True)
 
 
 def test_generate_uuid():

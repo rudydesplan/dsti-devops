@@ -3,7 +3,7 @@ import requests
 
 def test_get_endpoint_returns_json_output():
     # Define the endpoint URL
-    endpoint_url = "http://localhost/avocados/0"
+    endpoint_url = "http://localhost:5000/avocados/0"
 
     # Make a GET request to the endpoint
     response = requests.get(endpoint_url)
@@ -22,5 +22,6 @@ def test_get_endpoint_returns_json_output():
 
     # Check that the JSON object has the expected keys
     expected_keys = ["date", "small_plu", "state"]
-    assert set(expected_keys).issubset(json_data.keys()), \
-        f"Expected keys {expected_keys} not found in response JSON"
+    assert set(expected_keys).issubset(
+        json_data.get("data")[0].keys()
+    ), f"Expected keys {expected_keys} not found in response JSON"
