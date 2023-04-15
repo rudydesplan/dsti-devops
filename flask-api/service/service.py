@@ -16,10 +16,7 @@ def home():
 def get_avocados():
     preparation = AvocadoPrep(dataset_location=DATA_LOCATION)
     prepared_json = preparation.prepare(Json=True)
-    response = make_response(jsonify(prepared_json))
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
+    response = jsonify(prepared_json)
     return response
 
 
