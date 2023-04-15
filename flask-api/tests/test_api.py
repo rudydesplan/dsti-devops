@@ -21,7 +21,7 @@ def test_get_endpoint_returns_json_output():
         assert False, "Response body is not valid JSON"
 
     # Check that the JSON object has the expected keys
-    expected_keys = ["date", "small_plu", "state"]
+    expected_keys = ["date", "small_plu", "state", "average_size_bags", "region", "season"]
     assert set(expected_keys).issubset(
         json_data.get("data")[0].keys()
     ), f"Expected keys {expected_keys} not found in response JSON"
