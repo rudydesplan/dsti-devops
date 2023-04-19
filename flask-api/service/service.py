@@ -1,3 +1,4 @@
+import uuid
 import pymongo
 from pymongo import MongoClient
 
@@ -11,19 +12,157 @@ class MongoConnector:
     def __init__(self, uri, db_name):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
+        self.columns = ["unique_id", "date", "season", "price", "region"]
 
-     # Créer un index unique pour éviter les doublons
-    def create_unique_index(self, collection_name):
-        try:
-            self.db[collection_name].create_index("unique_id", unique=True)
-        except pymongo.errors.OperationFailure as e:
-            print(f"Erreur lors de la création de l'index unique : {e}")
-            
+     def generate_unique_id(self):
+        return str(uuid.uuid4())
+
+    def modify_region_for_indexes(self, start_index, end_index, new_region):
+        avocados_collection = self.db["avocados"]
+        num_docs = avocados_collection.count_documents({})
+        if start_index < 0 or end_index >= num_docs or start_index > end_index:
+            raise ValueError("Invalid range for modification")
+        avocados_collection.update_many(
+            {"id": {"$gte": start_index, "$lte": end_index}},
+            {"$set": {"region": new_region}}
+        )
+
+    def delete_rows_for_indexes(self, start_index, end_index):
+        avocados_collection = self.db["avocados"]
+        num_docs = avocados_collection.count_documents({})
+        if start_index < 0 or end_index >= num_docs or start_index > end_index:
+            raise ValueError("Invalid range for deletion")
+        avocados_collection.delete_many(
+            {"id": {"$gte": start_index, "$lte": end_index}}
+        )
+    
+    #Get avocados below a certain price
+    def get_avocados_price_below(self, max_price):
+    collection = self.db["avocados"]
+    data = list(collection.find({"price": {"$lt": max_price}}))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
+    
+    #Get avocados by season
+    def get_avocados_by_season(self, season):
+    collection = self.db["avocados"]
+    data = list(collection.find({"season": season}))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
+    
+    #Get the total number of avocados sold in a region
+    def get_total_avocados_by_region(self, region):
+    collection = self.db["avocados"]
+    result = collection.aggregate([
+        {"$match": {"region": region}},
+        {"$group": {"_id": None, "total_avocados": {"$sum": "$total_volume"}}}
+    ])
+
+    for r in result:
+        return r["total_avocados"]
+    return None
+    
+    #Get the highest and lowest avocado prices for a specific region:
+    def get_price_extremes_by_region(self, region):
+    collection = self.db["avocados"]
+    result = collection.aggregate([
+        {"$match": {"region": region}},
+        {"$group": {
+            "_id": None,
+            "min_price": {"$min": "$price"},
+            "max_price": {"$max": "$price"}
+        }}
+    ])
+
+    for r in result:
+        return {"region": region, "min_price": r["min_price"], "max_price": r["max_price"]}
+    return None
+
+    
+    def insert_row(self, row):
+    avocados_collection = self.db["avocados"]
+    num_docs = avocados_collection.count_documents({})
+    for key in row.keys():
+        if key not in self.columns:
+            raise ValueError(f"{key} is not a valid column name")
+    row["unique_id"] = num_docs
+    avocados_collection.insert_one(row)
+
+    def get_table(self, collection_name):
+    collection = self.db[collection_name]
+    data = list(collection.find({}))
+    for item in data:
+        item["_id"] = str(item["_id"])
+    return data
+
+    def get_avocado_count(self):
+    collection = self.db["avocados"]
+    return collection.count_documents({})
+
+    def get_row(self, index, collection_name):
+    collection = self.db[collection_name]
+    row = collection.find_one({"unique_id": int(index)})
+    if row:
+        row["_id"] = str(row["_id"])
+        return row
+    else:
+        return None
+    
+    def get_avocados_by_region(self, region):
+    collection = self.db["avocados"]
+    data = list(collection.find({"region": region}))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
+    
+    def get_avocados_price_above(self, min_price):
+    collection = self.db["avocados"]
+    data = list(collection.find({"price": {"$gt": min_price}}))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
+    
+    def get_avocados_by_date_range(self, start_date, end_date):
+    collection = self.db["avocados"]
+    data = list(collection.find({"date": {"$gte": start_date, "$lte": end_date}}))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
+    
+    def get_avg_price_by_region(self, region):
+    collection = self.db["avocados"]
+    result = collection.aggregate([
+        {"$match": {"region": region}},
+        {"$group": {"_id": None, "avg_price": {"$avg": "$price"}}}
+    ])
+
+    for r in result:
+        return r["avg_price"]
+    return None
+
+
     # Update or Insert data 
     def upsert_data(self, collection_name, data):
         collection = self.db[collection_name]
         for item in data:
-            unique_id = create_unique_id(item)
+            unique_id = self.generate_unique_id()
             item["unique_id"] = unique_id
             collection.update_one({"unique_id": unique_id}, {"$set": item}, upsert=True)
             
@@ -68,8 +207,47 @@ def prepare():
 
 @app.route("/avocados")
 def get_avocados():
-    return mongo.get_table('avocados')
+    return mongo_connector.get_table('avocados')
 
+#Add a new avocado entry with a POST request
+@app.route("/avocados", methods=["POST"])
+def add_avocado():
+    data = request.get_json()
+    if data is None:
+        abort(400, description="No data provided for insertion.")
+    try:
+        mongo_connector.insert_row(data)
+        return jsonify({"result": "success", "message": "New avocado entry added."})
+    except ValueError as e:
+        abort(400, description=str(e))
+
+#Get avocado entries by region
+@app.route("/avocados/region/<region>")
+def get_avocados_by_region(region):
+    avocados_data = mongo_connector.get_avocados_by_region(region)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found for the specified region.")
+
+#Get avocado entries within a specific date range
+@app.route("/avocados/date-range/<start_date>/<end_date>")
+def get_avocados_by_date_range(start_date, end_date):
+    avocados_data = mongo_connector.get_avocados_by_date_range(start_date, end_date)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found within the specified date range.")   
+        
+#Get average price of avocados by region
+@app.route("/avocados/avg-price/region/<region>")
+def get_avg_price_by_region(region):
+    avg_price = mongo_connector.get_avg_price_by_region(region)
+    if avg_price is not None:
+        return jsonify({"region": region, "average_price": avg_price})
+    else:
+        abort(404, description="No avocados found for the specified region.")        
+        
 @app.route("/avocados/<index>")
 def prepare_row(index):
     index = int(index)
@@ -82,9 +260,18 @@ def prepare_row(index):
     else:
         abort(404, description="Index out of range")
       
-@app.route("/avocados/<index>")
+@app.route("/avocados/row/<index>")
 def get_row(index):
-    return mongo_connector.get_row(index, 'avocados')
+    row = mongo_connector.get_row(index, 'avocados')
+    if row:
+        return jsonify(row)
+    else:
+        abort(404, description="Row not found")
+
+@app.route("/avocados/count")
+def get_avocado_count():
+    count = mongo_connector.get_avocado_count()
+    return jsonify({"count": count})        
     
 @app.route("/avocados/<unique_id>", methods=["DELETE"])
 def delete_avocado(unique_id):
@@ -94,6 +281,47 @@ def delete_avocado(unique_id):
     else:
         abort(404, description="Avocado with given unique_id not found.")
 
+@app.route("/avocados/price-above/<float:min_price>")
+def get_avocados_price_above(min_price):
+    avocados_data = mongo_connector.get_avocados_price_above(min_price)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found with a price higher than the specified value.")        
+
+@app.route("/avocados/price-below/<float:max_price>")
+def get_avocados_price_below(max_price):
+    avocados_data = mongo_connector.get_avocados_price_below(max_price)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found with a price lower than the specified value.")
+        
+@app.route("/avocados/season/<season>")
+def get_avocados_by_season(season):
+    avocados_data = mongo_connector.get_avocados_by_season(season)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found for the specified season.")
+
+@app.route("/avocados/total/region/<region>")
+def get_total_avocados_by_region(region):
+    total_avocados = mongo_connector.get_total_avocados_by_region(region)
+    if total_avocados is not None:
+        return jsonify({"region": region, "total_avocados": total_avocados})
+    else:
+        abort(404, description="No avocados found for the specified region.")
+
+@app.route("/avocados/price-extremes/region/<region>")
+def get_price_extremes_by_region(region):
+    price_extremes = mongo_connector.get_price_extremes_by_region(region)
+    if price_extremes:
+        return jsonify(price_extremes)
+    else:
+        abort(404, description="No avocados found for the specified region.")
+        
+        
 @app.route("/avocados/<unique_id>", methods=["PUT"])
 def update_avocado(unique_id):
     data = request.get_json()
