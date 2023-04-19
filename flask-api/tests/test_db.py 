@@ -18,6 +18,23 @@ def test_create_unique_index(test_mongo_connector):
     assert "unique_id_1" in indexes
     assert indexes["unique_id_1"]["unique"]
 
+def test_print_avocados_documents(test_mongo_connector):
+    collection = test_mongo_connector.db["test_avocados"]
+    for document in collection.find():
+        print(document)
+
+def test_modify_region_for_invalid_range(test_mongo_connector):
+    try:
+        test_mongo_connector.modify_region_for_indexes(5, 3, "West")
+    except ValueError as e:
+        print(str(e))
+
+def test_delete_rows_for_invalid_range(test_mongo_connector):
+    try:
+        test_mongo_connector.delete_rows_for_indexes(-1, 2)
+    except ValueError as e:
+        print(str(e))
+
 def test_upsert_data(test_mongo_connector):
     test_data = [
         {
@@ -39,3 +56,52 @@ def test_upsert_data(test_mongo_connector):
     unique_id = create_unique_id(test_data[0])
     
     assert document["unique_id"] == unique_id
+
+def test_delete_data(test_mongo_connector):
+    test_data = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "4.3",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    unique_id = create_unique_id(test_data)
+    test_mongo_connector.upsert_data("test_avocados", [test_data])
+    collection = test_mongo_connector.db["test_avocados"]
+    assert collection.count_documents({}) == 1
+
+    deleted_count = test_mongo_connector.delete_data("test_avocados", unique_id)
+    assert deleted_count == 1
+    assert collection.count_documents({}) == 0
+
+def test_update_data(test_mongo_connector):
+    test_data = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "4.3",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    updated_data = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "5.0",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    unique_id = create_unique_id(test_data)
+    test_mongo_connector.upsert_data("test_avocados", [test_data])
+    collection = test_mongo_connector.db["test_avocados"]
+    assert collection.count_documents({}) == 1
+
+    modified_count = test_mongo_connector.update_data("test_avocados", unique_id, updated_data)
+    assert modified_count == 1
+
+    document = collection.find_one({})
+    assert document["average_size_bags"] == "5.0"
