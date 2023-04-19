@@ -2,7 +2,7 @@ import pymongo
 from pymongo import MongoClient
 
 import pandas as pd
-from flask import Flask, abort, jsonify, make_response, render_template
+from flask import Flask, abort, jsonify, make_response, render_template, request
 
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import DATA_LOCATION
