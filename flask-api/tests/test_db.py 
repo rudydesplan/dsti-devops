@@ -8,7 +8,8 @@ MONGODB_TEST_URI = "mongodb://localhost:27017/test_db"
 @pytest.fixture
 def test_mongo_connector():
     return MongoConnector(MONGODB_TEST_URI, "test_db")
-
+    
+# Test if create_unique_index function creates unique index correctly
 def test_create_unique_index(test_mongo_connector):
     test_mongo_connector.create_unique_index("test_avocados")
     
@@ -18,23 +19,51 @@ def test_create_unique_index(test_mongo_connector):
     assert "unique_id_1" in indexes
     assert indexes["unique_id_1"]["unique"]
 
+# Test if create_unique_id function generates unique IDs correctly for different data
+def test_create_unique_id():
+    data1 = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "4.3",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+    data2 = {
+        "date": "2021-02-02",
+        "small_plu": "1235",
+        "state": "CA",
+        "average_size_bags": "4.3",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    unique_id1 = create_unique_id(data1)
+    unique_id2 = create_unique_id(data2)
+
+    assert unique_id1 != unique_id2
+
+# Test function for printing avocados documents (not really a test, mainly for manual checking)
 def test_print_avocados_documents(test_mongo_connector):
     collection = test_mongo_connector.db["test_avocados"]
     for document in collection.find():
         print(document)
 
+# Test if modify_region_for_indexes raises ValueError for invalid range
 def test_modify_region_for_invalid_range(test_mongo_connector):
     try:
         test_mongo_connector.modify_region_for_indexes(5, 3, "West")
     except ValueError as e:
         print(str(e))
 
+# Test if delete_rows_for_indexes raises ValueError for invalid range
 def test_delete_rows_for_invalid_range(test_mongo_connector):
     try:
         test_mongo_connector.delete_rows_for_indexes(-1, 2)
     except ValueError as e:
         print(str(e))
 
+# Test if upsert_data function inserts data correctly
 def test_upsert_data(test_mongo_connector):
     test_data = [
         {
@@ -57,6 +86,29 @@ def test_upsert_data(test_mongo_connector):
     
     assert document["unique_id"] == unique_id
 
+# Test if upsert_data function updates existing data correctly
+def test_upsert_data_existing_data(test_mongo_connector):
+    test_data = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "4.3",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    test_mongo_connector.upsert_data("test_avocados", [test_data])
+    collection = test_mongo_connector.db["test_avocados"]
+    assert collection.count_documents({}) == 1
+
+    test_data["average_size_bags"] = "5.0"
+    test_mongo_connector.upsert_data("test_avocados", [test_data])
+    assert collection.count_documents({}) == 1
+
+    document = collection.find_one({})
+    assert document["average_size_bags"] == "5.0"
+
+# Test if delete_data function deletes data correctly
 def test_delete_data(test_mongo_connector):
     test_data = {
         "date": "2021-02-02",
@@ -76,6 +128,7 @@ def test_delete_data(test_mongo_connector):
     assert deleted_count == 1
     assert collection.count_documents({}) == 0
 
+# Test if update_data function updates data correctly
 def test_update_data(test_mongo_connector):
     test_data = {
         "date": "2021-02-02",
@@ -105,3 +158,18 @@ def test_update_data(test_mongo_connector):
 
     document = collection.find_one({})
     assert document["average_size_bags"] == "5.0"
+
+# Test if update_data function does not modify any data when given a non-existent unique_id
+def test_update_data_non_existent_data(test_mongo_connector):
+    non_existent_unique_id = "non_existent_id"
+    data_to_update = {
+        "date": "2021-02-02",
+        "small_plu": "1234",
+        "state": "CA",
+        "average_size_bags": "5.0",
+        "region": "San Francisco",
+        "season": "spring",
+    }
+
+    modified_count = test_mongo_connector.update_data("test_avocados", non_existent_unique_id, data_to_update)
+    assert modified_count == 0
