@@ -25,6 +25,16 @@ class MongoConnector:
             unique_id = create_unique_id(item)
             item["unique_id"] = unique_id
             collection.update_one({"unique_id": unique_id}, {"$set": item}, upsert=True)
+            
+    def delete_data(self, collection_name, unique_id):
+        collection = self.db[collection_name]
+        result = collection.delete_one({"unique_id": unique_id})
+        return result.deleted_count
+
+    def update_data(self, collection_name, unique_id, data):
+        collection = self.db[collection_name]
+        result = collection.update_one({"unique_id": unique_id}, {"$set": data})
+        return result.modified_count
 
 # Remplacez <username> et <password> par vos informations d'identification
 MONGODB_URI = "mongodb+srv://<dsti-devops>:<dsti-devops>@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
@@ -61,6 +71,27 @@ def get_by_id(index):
         return jsonify(prepared_row)
     else:
         abort(404, description="Index out of range")
+
+@app.route("/avocados/<unique_id>", methods=["DELETE"])
+def delete_avocado(unique_id):
+    deleted_count = mongo_connector.delete_data("avocados", unique_id)
+    if deleted_count > 0:
+        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} deleted."})
+    else:
+        abort(404, description="Avocado with given unique_id not found.")
+
+@app.route("/avocados/<unique_id>", methods=["PUT"])
+def update_avocado(unique_id):
+    data = request.get_json()
+    if data is None:
+        abort(400, description="No data provided for update.")
+    
+    modified_count = mongo_connector.update_data("avocados", unique_id, data)
+    if modified_count > 0:
+        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} updated."})
+    else:
+        abort(404, description="Avocado with given unique_id not found.")
+        
 
 
 if __name__ == "__main__":
