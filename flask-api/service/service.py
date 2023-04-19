@@ -18,7 +18,8 @@ class MongoConnector:
             self.db[collection_name].create_index("unique_id", unique=True)
         except pymongo.errors.OperationFailure as e:
             print(f"Erreur lors de la création de l'index unique : {e}")
-
+            
+    # Update or Insert data 
     def upsert_data(self, collection_name, data):
         collection = self.db[collection_name]
         for item in data:
@@ -26,11 +27,13 @@ class MongoConnector:
             item["unique_id"] = unique_id
             collection.update_one({"unique_id": unique_id}, {"$set": item}, upsert=True)
             
+    # Delete data        
     def delete_data(self, collection_name, unique_id):
         collection = self.db[collection_name]
         result = collection.delete_one({"unique_id": unique_id})
         return result.deleted_count
-
+        
+    # Update data
     def update_data(self, collection_name, unique_id, data):
         collection = self.db[collection_name]
         result = collection.update_one({"unique_id": unique_id}, {"$set": data})
@@ -48,20 +51,27 @@ mongo_connector.create_unique_index("avocados")
 def home():
     return render_template(template_name_or_list="index.html")
 
+@app.route("/prepare")
+def prepare():
+    '''
+    Runs a data preparation and inserts/updates the database
+    :return:
+    '''
+    preparation = AvocadoPrep(dataset_location=DATA_LOCATION)
+    prepared_json = preparation.prepare(Json=True)
+    
+    # Insérer ou mettre à jour les données JSON dans MongoDB
+    mongo_connector.upsert_data("avocados", prepared_json)
+    
+    response = jsonify(prepared_json)
+    return response.status
 
 @app.route("/avocados")
 def get_avocados():
-    preparation = AvocadoPrep(dataset_location=DATA_LOCATION)
-    prepared_json = preparation.prepare(Json=True)
-
-    # Insérer ou mettre à jour les données JSON dans MongoDB
-    mongo_connector.upsert_data("avocados", prepared_json)
-
-    response = jsonify(prepared_json)
-    return response
+    return mongo.get_table('avocados')
 
 @app.route("/avocados/<index>")
-def get_by_id(index):
+def prepare_row(index):
     index = int(index)
     data = pd.read_csv(DATA_LOCATION)
     if index in range(data.shape[0]):
@@ -71,7 +81,11 @@ def get_by_id(index):
         return jsonify(prepared_row)
     else:
         abort(404, description="Index out of range")
-
+      
+@app.route("/avocados/<index>")
+def get_row(index):
+    return mongo_connector.get_row(index, 'avocados')
+    
 @app.route("/avocados/<unique_id>", methods=["DELETE"])
 def delete_avocado(unique_id):
     deleted_count = mongo_connector.delete_data("avocados", unique_id)
@@ -92,7 +106,5 @@ def update_avocado(unique_id):
     else:
         abort(404, description="Avocado with given unique_id not found.")
         
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
