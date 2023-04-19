@@ -1,0 +1,41 @@
+import pytest
+from pymongo import MongoClient
+from main import MongoConnector, create_unique_id
+
+# Utilisez une base de données de test pour éviter d'affecter la base de données de production
+MONGODB_TEST_URI = "mongodb://localhost:27017/test_db"
+
+@pytest.fixture
+def test_mongo_connector():
+    return MongoConnector(MONGODB_TEST_URI, "test_db")
+
+def test_create_unique_index(test_mongo_connector):
+    test_mongo_connector.create_unique_index("test_avocados")
+    
+    collection = test_mongo_connector.db["test_avocados"]
+    indexes = collection.index_information()
+    
+    assert "unique_id_1" in indexes
+    assert indexes["unique_id_1"]["unique"]
+
+def test_upsert_data(test_mongo_connector):
+    test_data = [
+        {
+            "date": "2021-02-02",
+            "small_plu": "1234",
+            "state": "CA",
+            "average_size_bags": "4.3",
+            "region": "San Francisco",
+            "season": "spring",
+        }
+    ]
+    
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+    
+    collection = test_mongo_connector.db["test_avocados"]
+    assert collection.count_documents({}) == 1
+    
+    document = collection.find_one({})
+    unique_id = create_unique_id(test_data[0])
+    
+    assert document["unique_id"] == unique_id
