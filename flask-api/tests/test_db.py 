@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from pymongo import MongoClient
 from main import MongoConnector, create_unique_id
 
@@ -26,18 +27,28 @@ def test_create_unique_index(test_mongo_connector):
     assert indexes["unique_id_1"]["unique"]
 
 #1 Test if generate_unique_id function generates unique IDs correctly for different data
-def test_generate_unique_id():
+def test_generate_unique_id(test_mongo_connector):
+    unique_id1 = test_mongo_connector.generate_unique_id()
+    unique_id2 = test_mongo_connector.generate_unique_id()
+
+    assert unique_id1 is not None
+    assert unique_id2 is not None
+    assert isinstance(unique_id1, str)
+    assert isinstance(unique_id2, str)
+    assert unique_id1 != unique_id2
+    assert uuid.UUID(unique_id1, version=4)
+    assert uuid.UUID(unique_id2, version=4)
 
 #2a Test if upsert_data function inserts data correctly
 def test_upsert_data(test_mongo_connector):
     test_data = [
         {
-            "date": "2021-02-02",
-            "small_plu": "1234",
-            "state": "CA",
             "average_size_bags": "4.3",
+            "date": "2021-02-02",
             "region": "San Francisco",
             "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
         }
     ]
     
@@ -54,12 +65,12 @@ def test_upsert_data(test_mongo_connector):
 #2b Test if upsert_data function updates existing data correctly
 def test_upsert_data_existing_data(test_mongo_connector):
     test_data = {
-        "date": "2021-02-02",
-        "small_plu": "1234",
-        "state": "CA",
         "average_size_bags": "4.3",
+        "date": "2021-02-02",
         "region": "San Francisco",
         "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
     }
 
     test_mongo_connector.upsert_data("test_avocados", [test_data])
@@ -76,12 +87,12 @@ def test_upsert_data_existing_data(test_mongo_connector):
 #3 Test if delete_data function deletes data correctly
 def test_delete_data(test_mongo_connector):
     test_data = {
-        "date": "2021-02-02",
-        "small_plu": "1234",
-        "state": "CA",
         "average_size_bags": "4.3",
+        "date": "2021-02-02",
         "region": "San Francisco",
         "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
     }
 
     unique_id = create_unique_id(test_data)
@@ -96,21 +107,21 @@ def test_delete_data(test_mongo_connector):
 #4a Test if update_data function updates data correctly
 def test_update_data(test_mongo_connector):
     test_data = {
-        "date": "2021-02-02",
-        "small_plu": "1234",
-        "state": "CA",
         "average_size_bags": "4.3",
+        "date": "2021-02-02",
         "region": "San Francisco",
         "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
     }
 
     updated_data = {
-        "date": "2021-02-02",
-        "small_plu": "1234",
-        "state": "CA",
         "average_size_bags": "5.0",
+        "date": "2021-02-02",
         "region": "San Francisco",
         "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
     }
 
     unique_id = create_unique_id(test_data)
@@ -128,32 +139,175 @@ def test_update_data(test_mongo_connector):
 def test_update_data_non_existent_data(test_mongo_connector):
     non_existent_unique_id = "non_existent_id"
     data_to_update = {
-        "date": "2021-02-02",
-        "small_plu": "1234",
-        "state": "CA",
         "average_size_bags": "5.0",
+        "date": "2021-02-02",
         "region": "San Francisco",
         "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
     }
 
     modified_count = test_mongo_connector.update_data("test_avocados", non_existent_unique_id, data_to_update)
     assert modified_count == 0
 
+
 #5 Test if get_avocado_count function returns the correct count of documents
 def test_get_avocado_count(test_mongo_connector):
+    test_document = {
+        "average_size_bags": "4.3",
+        "date": "2021-02-02",
+        "region": "San Francisco",
+        "season": "spring",
+        "small_plu": "1234",
+        "state": "CA",
+    }
+    
+    # Insert a document
+    test_mongo_connector.upsert_data(test_document)
+    
+    # Get the count of documents
+    count = test_mongo_connector.get_avocado_count()
+    
+    # Check if the count is greater than 0 and is an integer
+    assert count == 1
+    assert isinstance(count, int)
+    
+    # Delete the test document to clean up after the test
+    test_mongo_connector.delete_data({"small_plu": "1234"})
+
 
 #6 Test if get_table function returns all documents from a specified collection
 def test_get_table(test_mongo_connector):
+    test_collection_name = "test_collection"
+    test_data = [
+        {
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Los Angeles",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+        {
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "San Diego",
+            "season": "spring",
+            "small_plu": "9101",
+            "state": "CA",
+        },
+    ]
+    test_collection = test_mongo_connector.db[test_collection_name]
+    test_collection.insert_many(test_data)
+
+    data = test_mongo_connector.get_table(test_collection_name)
+    assert len(data) == len(test_data)
+
+    # Clean up the test collection
+    test_mongo_connector.db.drop_collection(test_collection_name)
+
 
 #7 Test if get_row function returns a single document by its unique index from a specified collection
 def test_get_row(test_mongo_connector):
+    test_collection_name = "test_collection"
+    test_data = [
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Los Angeles",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "San Diego",
+            "season": "spring",
+            "small_plu": "9101",
+            "state": "CA",
+        },
+    ]
+    test_collection = test_mongo_connector.db[test_collection_name]
+    test_collection.insert_many(test_data)
+
+    row = test_mongo_connector.get_row("1", test_collection_name)
+    assert row is not None
+    assert row["unique_id"] == "1"
+    assert row["region"] == "San Francisco"
+
+    # Clean up the test collection
+    test_mongo_connector.db.drop_collection(test_collection_name)
+
 
 #8 Test if insert_row function inserts a new row into the avocados collection
 def test_insert_row(test_mongo_connector):
+    row_data = {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        }
+    test_mongo_connector.insert_row(row_data)
+
+    inserted_row = test_mongo_connector.get_row("test_unique_id", "avocados")
+    assert inserted_row is not None
+    assert inserted_row["unique_id"] == "test_unique_id"
+    assert inserted_row["average_size_bags"] == 1.25
+    assert inserted_row["date"] == "2021-01-01"
+    assert inserted_row["region"] == "Test Region"
+    assert inserted_row["season"] == "winter"
+
+    # Clean up the inserted row
+    test_mongo_connector.delete_data("avocados", "test_unique_id")
+
 
 #9a Test if modify_region_for_indexes function updates the region value for avocado documents within a given index range
 def test_modify_region_for_indexes(test_mongo_connector):
+    test_data = [
+        {"unique_id": "1", "id": 1, "region": "Old Region"},
+        {"unique_id": "2", "id": 2, "region": "Old Region"},
+        {"unique_id": "3", "id": 3, "region": "Old Region"},
+    ]
+    test_collection = test_mongo_connector.db["avocados"]
+    test_collection.insert_many(test_data)
 
+    test_mongo_connector.modify_region_for_indexes(1, 2, "New Region")
+
+    updated_row1 = test_mongo_connector.get_row("1", "avocados")
+    updated_row2 = test_mongo_connector.get_row("2", "avocados")
+    updated_row3 = test_mongo_connector.get_row("3", "avocados")
+
+    assert updated_row1["region"] == "Old Region"
+    assert updated_row2["region"] == "New Region"
+    assert updated_row3["region"] == "New Region"
+
+    # Clean up the test data
+    test_collection.delete_many({"unique_id": {"$in": ["1", "2", "3"]}})
+
+A modif
 #9b Test if modify_region_for_indexes raises ValueError for invalid range
 def test_modify_region_for_invalid_range(test_mongo_connector):
     try:
@@ -163,8 +317,28 @@ def test_modify_region_for_invalid_range(test_mongo_connector):
 
 #10a Test if delete_rows_for_indexes function deletes avocado documents within a given index range
 def test_delete_rows_for_indexes(test_mongo_connector):
+    test_data = [
+        {"unique_id": "1", "id": 1, "region": "Test Region"},
+        {"unique_id": "2", "id": 2, "region": "Test Region"},
+        {"unique_id": "3", "id": 3, "region": "Test Region"},
+    ]
+    test_collection = test_mongo_connector.db["avocados"]
+    test_collection.insert_many(test_data)
 
+    test_mongo_connector.delete_rows_for_indexes(1, 2)
 
+    deleted_row1 = test_mongo_connector.get_row("1", "avocados")
+    deleted_row2 = test_mongo_connector.get_row("2", "avocados")
+    remaining_row3 = test_mongo_connector.get_row("3", "avocados")
+
+    assert deleted_row1 is None
+    assert deleted_row2 is None
+    assert remaining_row3 is not None
+
+    # Clean up the test data
+    test_collection.delete_one({"unique_id": "3"})
+
+A modif
 #10b Test if delete_rows_for_indexes raises ValueError for invalid range
 def test_delete_rows_for_invalid_range(test_mongo_connector):
     try:
@@ -174,25 +348,129 @@ def test_delete_rows_for_invalid_range(test_mongo_connector):
         
 #11 Test if get_avocados_by_region function returns avocados from a specific region
 def test_get_avocados_by_region(test_mongo_connector):
+    test_data = [
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "Region A",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Los Angeles",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "Region B",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "San Diego",
+            "season": "spring",
+            "small_plu": "9101",
+            "state": "Region A",
+        },
+    ]
+    test_collection = test_mongo_connector.db["avocados"]
+    test_collection.insert_many(test_data)
+
+    avocados_region_a = test_mongo_connector.get_avocados_by_region("Region A")
+    avocados_region_b = test_mongo_connector.get_avocados_by_region("Region B")
+
+    assert len(avocados_region_a) == 2
+    assert len(avocados_region_b) == 1
+
+    # Clean up the test data
+    test_collection.delete_many({"unique_id": {"$in": ["1", "2", "3"]}})
 
 #12 Test if get_avocados_by_season function returns avocados for a specific season
 def test_get_avocados_by_season(test_mongo_connector):
+    test_data = [
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "San Francisco",
+            "season": "winter",
+            "small_plu": "1234",
+            "state": "Region A",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Los Angeles",
+            "season": "summer",
+            "small_plu": "5678",
+            "state": "Region B",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "San Diego",
+            "season": "winter",
+            "small_plu": "9101",
+            "state": "Region A",
+        },
+    ]
+    test_collection = test_mongo_connector.db["avocados"]
+    test_collection.insert_many(test_data)
+
+    avocados_winter = test_mongo_connector.get_avocados_by_season("winter")
+    avocados_summer = test_mongo_connector.get_avocados_by_season("summer")
+
+    assert len(avocados_winter) == 2
+    assert len(avocados_summer) == 1
+
+    # Clean up the test data
+    test_collection.delete_many({"unique_id": {"$in": ["1", "2", "3"]}})
 
 #13 Test if get_avocados_by_date_range function returns avocados within a specific date range
 def test_get_avocados_by_date_range(test_mongo_connector):
+    test_data = [
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-01-01",
+            "region": "San Francisco",
+            "season": "winter",
+            "small_plu": "1234",
+            "state": "Region A",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-01-15",
+            "region": "Los Angeles",
+            "season": "summer",
+            "small_plu": "5678",
+            "state": "Region B",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-02-01",
+            "region": "San Diego",
+            "season": "winter",
+            "small_plu": "9101",
+            "state": "Region A",
+        },
+    ]
+    test_collection = test_mongo_connector.db["avocados"]
+    test_collection.insert_many(test_data)
 
-#14 Test if get_avg_price_by_region function returns the average price of avocados for a specific region
-def test_get_avg_price_by_region(test_mongo_connector):
+    avocados_january = test_mongo_connector.get_avocados_by_date_range("2021-01-01", "2021-01-31")
+    avocados_february = test_mongo_connector.get_avocados_by_date_range("2021-02-01", "2021-02-28")
 
-#15 Test if get_avocados_price_above function returns avocados with a price above the given min_price
-def test_get_avocados_price_above(test_mongo_connector):
+    assert len(avocados_january) == 2
+    assert len(avocados_february) == 1
 
-#16 Test if get_avocados_price_below function returns avocados with a price below the given max_price
-def test_get_avocados_price_below(test_mongo_connector):
-
-#17 Test if get_price_extremes_by_region function returns the highest and lowest avocado prices for a specific region
-def test_get_price_extremes_by_region(test_mongo_connector):
-
-#18 Test if get_total_avocados_by_region function returns the total number of avocados sold in a specific region
-def test_get_total_avocados_by_region(test_mongo_connector):
-       
+    # Clean up the test data
+    test_collection.delete_many({"unique_id": {"$in": ["1", "2", "3"]}})
