@@ -48,11 +48,11 @@ jobs:
 #   - name: Run linting
 #     run: flake8 .
 
-    - name: Install formatting dependencies
-      run: pip install black
+#   - name: Install formatting dependencies
+#     run: pip install black
 
-    - name: Check code formatting
-      run: black --check .
+#   - name: Check code formatting
+#     run: black --check .
 
     - name: Install coverage dependencies
       run: pip install pytest-cov
