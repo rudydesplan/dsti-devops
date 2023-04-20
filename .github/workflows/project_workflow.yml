@@ -9,6 +9,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_DATABASE: avocado_db
+          MONGO_INITDB_ROOT_USERNAME: dsti-devops
+          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
 
     steps:
     - name: Checkout code
@@ -21,10 +30,14 @@ jobs:
 
     - name: Install dependencies
       working-directory: ./flask-api
-      run: pip install --no-cache-dir -r requirements.txt && python setup.py install
+      run: |
+        python -m pip install --upgrade pip
+        pip install --no-cache-dir -r requirements.txt && python setup.py install
 
     - name: Start Flask API
       working-directory: ./flask-api
+      env:
+        MONGODB_URI: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
       run: python service/service.py &
 
     - name: Wait for API to start up
