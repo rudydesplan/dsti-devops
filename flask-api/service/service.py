@@ -194,7 +194,7 @@ class MongoConnector:
 
 
 # Remplacez <username> et <password> par vos informations d'identification
-MONGODB_URI = "mongodb+srv://<dsti-devops>:<dsti-devops>@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
+MONGODB_URI = "mongodb+srv://dsti-devops:dsti-devops@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
 
 app = Flask(__name__)
 
