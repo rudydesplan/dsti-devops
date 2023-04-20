@@ -287,9 +287,33 @@ def test_insert_row(test_mongo_connector):
 #9a Test if modify_region_for_indexes function updates the region value for avocado documents within a given index range
 def test_modify_region_for_indexes(test_mongo_connector):
     test_data = [
-        {"unique_id": "1", "id": 1, "region": "Old Region"},
-        {"unique_id": "2", "id": 2, "region": "Old Region"},
-        {"unique_id": "3", "id": 3, "region": "Old Region"},
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "Old Region",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Old Region",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "Old Region",
+            "season": "spring",
+            "small_plu": "9101",
+            "state": "CA",
+        },
     ]
     test_collection = test_mongo_connector.db["avocados"]
     test_collection.insert_many(test_data)
@@ -318,9 +342,33 @@ def test_modify_region_for_invalid_range(test_mongo_connector):
 #10a Test if delete_rows_for_indexes function deletes avocado documents within a given index range
 def test_delete_rows_for_indexes(test_mongo_connector):
     test_data = [
-        {"unique_id": "1", "id": 1, "region": "Test Region"},
-        {"unique_id": "2", "id": 2, "region": "Test Region"},
-        {"unique_id": "3", "id": 3, "region": "Test Region"},
+        {
+            "unique_id": "1",
+            "average_size_bags": "4.3",
+            "date": "2021-02-02",
+            "region": "Test Region",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "unique_id": "2",
+            "average_size_bags": "5.2",
+            "date": "2021-03-03",
+            "region": "Test Region",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+        {
+            "unique_id": "3",
+            "average_size_bags": "3.9",
+            "date": "2021-04-04",
+            "region": "Test Region",
+            "season": "spring",
+            "small_plu": "9101",
+            "state": "CA",
+        },
     ]
     test_collection = test_mongo_connector.db["avocados"]
     test_collection.insert_many(test_data)
