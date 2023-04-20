@@ -201,6 +201,11 @@ app = Flask(__name__)
 mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
 mongo_connector.create_unique_index("avocados")
 
+# Health check and status endpoint
+@app.route("/health")
+def health_check():
+    return jsonify({"status": "OK", "message": "API is up and running"})
+
 # Render the home page
 @app.route("/")
 def home():
