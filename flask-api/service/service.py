@@ -128,6 +128,69 @@ class MongoConnector:
             return data
         else:
             return None
+    #14 Get the average size bags for a specific region
+    def get_average_size_bags_by_region(self, region):
+        collection = self.db["avocados"]
+        result = collection.aggregate([
+            {"$match": {"region": region}},
+            {"$group": {"_id": None, "average": {"$avg": "$average_size_bags"}}}
+        ])
+        data = list(result)
+        if data:
+            return data[0]["average"]
+        else:
+            return None
+
+    #15 Get the count of avocados with a specific small PLU code
+    def get_avocados_count_by_small_plu(self, small_plu):
+        collection = self.db["avocados"]
+        count = collection.count_documents({"small_plu": small_plu})
+        return count
+
+    #16 Get avocado documents by state
+    def get_avocados_by_state(self, state):
+        collection = self.db["avocados"]
+        data = list(collection.find({"state": state}))
+        if data:
+            for item in data:
+                item["_id"] = str(item["_id"])
+            return data
+        else:
+            return None
+
+    #17 Get the count of avocado documents for a specific season and region
+    def get_avocados_count_by_season_and_region(self, season, region):
+        collection = self.db["avocados"]
+        count = collection.count_documents({"season": season, "region": region})
+        return count
+    
+    #18
+    def search_avocados(self, filters):
+    query = {}
+    
+    if 'date' in filters:
+        query['date'] = {'$gte': filters['date'].get('start', ''), '$lte': filters['date'].get('end', '')}
+    
+    if 'region' in filters:
+        query['region'] = filters['region']
+    
+    if 'season' in filters:
+        query['season'] = filters['season']
+    
+    if 'small_plu' in filters:
+        query['small_plu'] = filters['small_plu']
+    
+    if 'state' in filters:
+        query['state'] = filters['state']
+    
+    collection = self.db['avocados']
+    data = list(collection.find(query))
+    if data:
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
+    else:
+        return None
 
 
 # Remplacez <username> et <password> par vos informations d'identification
@@ -249,5 +312,48 @@ def get_avocados_by_date_range(start_date, end_date):
     else:
         abort(404, description="No avocados found within the specified date range.")   
 
+#14 Get the average size bags for a specific region      
+@app.route("/avocados/average-size-bags/<region>")
+def get_average_size_bags_by_region(region):
+    avg_size_bags = mongo_connector.get_average_size_bags_by_region(region)
+    if avg_size_bags is not None:
+        return jsonify({"average_size_bags": avg_size_bags})
+    else:
+        abort(404, description="No data found for the specified region.")       
+
+#15 Get the count of avocados with a specific small PLU code
+@app.route("/avocados/small-plu/<small_plu>/count")
+def get_avocados_count_by_small_plu(small_plu):
+    count = mongo_connector.get_avocados_count_by_small_plu(small_plu)
+    return jsonify({"count": count})
+
+#16 Get avocado documents by state
+@app.route("/avocados/state/<state>")
+def get_avocados_by_state(state):
+    avocados_data = mongo_connector.get_avocados_by_state(state)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found for the specified state.")
+        
+#17 Get the count of avocado documents for a specific season and region
+@app.route("/avocados/season/<season>/region/<region>/count")
+def get_avocados_count_by_season_and_region(season, region):
+    count = mongo_connector.get_avocados_count_by_season_and_region(season, region)
+    return jsonify({"count": count})
+
+#18
+@app.route("/avocados/search", methods=["POST"])
+def search_avocados():
+    filters = request.get_json()
+    if filters is None:
+        abort(400, description="No filters provided for search.")
+    # Implement a function in the MongoConnector class to search based on filters
+    avocados_data = mongo_connector.search_avocados(filters)
+    if avocados_data:
+        return jsonify(avocados_data)
+    else:
+        abort(404, description="No avocados found matching the specified filters.")
+        
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
