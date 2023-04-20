@@ -1,6 +1,6 @@
 import requests
 
-#1 Test GET endpoint
+#1a Test GET endpoint
 def test_get_endpoint_returns_json_output():
     # Define the endpoint URL
     endpoint_url = "http://localhost:5000/avocados/0"
@@ -26,7 +26,32 @@ def test_get_endpoint_returns_json_output():
         json_data.get("data")[0].keys()
     ), f"Expected keys {expected_keys} not found in response JSON"
 
-#2 Test POST endpoint for creating a new avocado document
+#1b Test GET endpoint with an invalid ID
+def test_get_endpoint_with_invalid_id_returns_404():
+    # Define the endpoint URL with an invalid ID
+    invalid_id = -1
+    endpoint_url = f"http://localhost:5000/avocados/{invalid_id}"
+
+    # Make a GET request to the endpoint
+    response = requests.get(endpoint_url)
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404
+
+#1c Test GET endpoint with a non-existent document ID
+def test_get_endpoint_with_non_existent_document_returns_404():
+    # Define the endpoint URL with a non-existent document ID
+    non_existent_id = 9999
+    endpoint_url = f"http://localhost:5000/avocados/{non_existent_id}"
+
+    # Make a GET request to the endpoint
+    response = requests.get(endpoint_url)
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404
+
+    
+#2a Test POST endpoint for creating a new avocado document
 def test_post_endpoint_creates_new_avocado_document():
     # Define the endpoint URL
     endpoint_url = "http://localhost:5000/avocados"
@@ -54,7 +79,26 @@ def test_post_endpoint_creates_new_avocado_document():
     except ValueError:
         assert False, "Response body is not valid JSON"
 
-#3 Test PUT endpoint for updating an existing avocado document
+#2b Test POST endpoint with missing required fields
+def test_post_endpoint_with_missing_fields_returns_400():
+    # Define the endpoint URL
+    endpoint_url = "http://localhost:5000/avocados"
+
+    # Define the data to be sent in the POST request with missing required fields
+    avocado_data = {
+        "date": "2023-01-01",
+        "season": "spring",
+        "state": "California"
+    }
+
+    # Make a POST request to the endpoint
+    response = requests.post(endpoint_url, json=avocado_data)
+
+    # Check that the response status code is 400 Bad Request
+    assert response.status_code == 400
+
+        
+#3a Test PUT endpoint for updating an existing avocado document
 def test_put_endpoint_updates_existing_avocado_document():
     # Define the endpoint URL
     unique_id = 1
@@ -78,7 +122,41 @@ def test_put_endpoint_updates_existing_avocado_document():
     except ValueError:
         assert False, "Response body is not valid JSON"
 
-#4 Test DELETE endpoint for deleting an existing avocado document
+#3b Test PUT endpoint with invalid data
+def test_put_endpoint_with_invalid_data_returns_400():
+    # Define the endpoint URL
+    unique_id = 1
+    endpoint_url = f"http://localhost:5000/avocados/{unique_id}"
+
+    # Define the data to be sent in the PUT request with invalid data
+    updated_data = {
+        "average_size_bags": "invalid_data"
+    }
+
+    # Make a PUT request to the endpoint
+    response = requests.put(endpoint_url, json=updated_data)
+
+    # Check that the response status code is 400 Bad Request
+    assert response.status_code == 400
+
+#3c Test PUT endpoint with a non-existent document ID
+def test_put_endpoint_with_non_existent_document_returns_404():
+    # Define the endpoint URL with a non-existent document ID
+    non_existent_id = 9999
+    endpoint_url = f"http://localhost:5000/avocados/{non_existent_id}"
+
+    # Define the data to be sent in the PUT request
+    updated_data = {
+        "average_size_bags": 10
+    }
+
+    # Make a PUT request to the endpoint
+    response = requests.put(endpoint_url, json=updated_data)
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404
+
+#4a Test DELETE endpoint for deleting an existing avocado document
 def test_delete_endpoint_deletes_existing_avocado_document():
     # Define the endpoint URL
     unique_id = 2
@@ -89,3 +167,27 @@ def test_delete_endpoint_deletes_existing_avocado_document():
 
     # Check that the response status code is 204 No Content
     assert response.status_code == 204
+
+#4b Test DELETE endpoint with a non-existent document
+def test_delete_endpoint_with_non_existent_document_returns_404():
+    # Define the endpoint URL with a non-existent document ID
+    non_existent_id = 9999
+    endpoint_url = f"http://localhost:5000/avocados/{non_existent_id}"
+
+    # Make a DELETE request to the endpoint
+    response = requests.delete(endpoint_url)
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404
+
+#4c Test DELETE endpoint with a non-existent document ID
+def test_delete_endpoint_with_non_existent_document_returns_404():
+    # Define the endpoint URL with a non-existent document ID
+    non_existent_id = 9999
+    endpoint_url = f"http://localhost:5000/avocados/{non_existent_id}"
+
+    # Make a DELETE request to the endpoint
+    response = requests.delete(endpoint_url)
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404
