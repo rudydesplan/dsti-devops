@@ -1,14 +1,25 @@
-FROM python:3.9-slim-buster
+# Use the official Python base image
+FROM python:3.12-rc-bullseye
 
+# Set the working directory
 WORKDIR /app
 
-COPY requirements.txt setup.py .
+# Copy requirements file
+COPY requirements.txt
+
+# Copy the rest of the application code
+COPY setup.py
 COPY modules ./modules
 COPY service ./service
 
-RUN pip install --no-cache-dir -r requirements.txt &&\
-    python setup.py install
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
 
+# Install the application
+RUN python setup.py install
+    
+# Make port 5000 available to the world outside this container
 EXPOSE 5000
 
+# Run the application
 CMD ["python", "service/service.py"]
