@@ -62,7 +62,7 @@ def test_post_endpoint_creates_new_avocado_document():
         "date": "2023-01-01",
         "region": "West",
         "season": "spring",
-        "small_plu": 12345,
+        "small_plu": 12345.6,
         "state": "California",
     }
 
