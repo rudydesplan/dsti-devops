@@ -12,7 +12,7 @@ class MongoConnector:
     def __init__(self, uri, db_name):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
-        self.columns = ["unique_id", "date", "season", "price", "region"]
+        self.columns = ["unique_id", "average_size_bags", "date", "region", "season", "small_plu", "state"]
         
     def create_unique_index(self, collection_name):
         collection = self.db[collection_name]
