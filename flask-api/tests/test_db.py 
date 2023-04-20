@@ -522,3 +522,166 @@ def test_get_avocados_by_date_range(test_mongo_connector):
 
     # Clean up the test data
     test_collection.delete_many({"unique_id": {"$in": ["1", "2", "3"]}})
+
+#14 Test get_average_size_bags_by_region function
+def test_get_average_size_bags_by_region(test_mongo_connector):
+    test_data = [
+        {
+            "average_size_bags": 3.0,
+            "region": "San Francisco",
+        },
+        {
+            "average_size_bags": 5.0,
+            "region": "San Francisco",
+        },
+        {
+            "average_size_bags": 4.0,
+            "region": "Los Angeles",
+        },
+    ]
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+
+    average = test_mongo_connector.get_average_size_bags_by_region("San Francisco")
+    assert average == 4.0
+
+    average = test_mongo_connector.get_average_size_bags_by_region("Los Angeles")
+    assert average == 4.0
+
+    average = test_mongo_connector.get_average_size_bags_by_region("New York")
+    assert average is None
+
+#15 Test get_avocados_count_by_small_plu function
+def test_get_avocados_count_by_small_plu(test_mongo_connector):
+    test_data = [
+        {
+            "small_plu": "1234",
+        },
+        {
+            "small_plu": "1234",
+        },
+        {
+            "small_plu": "5678",
+        },
+    ]
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+
+    count = test_mongo_connector.get_avocados_count_by_small_plu("1234")
+    assert count == 2
+
+    count = test_mongo_connector.get_avocados_count_by_small_plu("5678")
+    assert count == 1
+
+    count = test_mongo_connector.get_avocados_count_by_small_plu("0000")
+    assert count == 0
+
+#16 Test get_avocados_by_state function
+def test_get_avocados_by_state(test_mongo_connector):
+    test_data = [
+        {
+            "state": "CA",
+        },
+        {
+            "state": "CA",
+        },
+        {
+            "state": "NY",
+        },
+    ]
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+
+    data = test_mongo_connector.get_avocados_by_state("CA")
+    assert len(data) == 2
+
+    data = test_mongo_connector.get_avocados_by_state("NY")
+    assert len(data) == 1
+
+    data = test_mongo_connector.get_avocados_by_state("FL")
+    assert data is None
+    
+#17 Test get_avocados_count_by_season_and_region function
+def test_get_avocados_count_by_season_and_region(test_mongo_connector):
+    test_data = [
+        {
+            "season": "spring",
+            "region": "San Francisco",
+        },
+        {
+            "season": "spring",
+            "region": "San Francisco",
+        },
+        {
+            "season": "summer",
+            "region": "San Francisco",
+        },
+        {
+            "season": "spring",
+            "region": "Los Angeles",
+        },
+    ]
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+
+    count = test_mongo_connector.get_avocados_count_by_season_and_region("spring", "San Francisco")
+    assert count == 2
+
+    count = test_mongo_connector.get_avocados_count_by_season_and_region("summer", "San Francisco")
+    assert count == 1
+    
+    count = test_mongo_connector.get_avocados_count_by_season_and_region("winter", "San Francisco")
+    assert count == 0
+
+    count = test_mongo_connector.get_avocados_count_by_season_and_region("spring", "New York")
+    assert count == 0
+    
+#18 Test search_avocados function
+def test_search_avocados(test_mongo_connector):
+    test_data = [
+        {
+            "date": "2021-02-01",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "date": "2021-03-01",
+            "region": "San Francisco",
+            "season": "spring",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+        {
+            "date": "2021-03-15",
+            "region": "Los Angeles",
+            "season": "spring",
+            "small_plu": "1234",
+            "state": "CA",
+        },
+        {
+            "date": "2021-06-01",
+            "region": "Los Angeles",
+            "season": "summer",
+            "small_plu": "5678",
+            "state": "CA",
+        },
+    ]
+    test_mongo_connector.upsert_data("test_avocados", test_data)
+
+    filters = {"region": "San Francisco", "season": "spring"}
+    data = test_mongo_connector.search_avocados(filters)
+    assert len(data) == 2
+
+    filters = {"state": "CA", "small_plu": "1234"}
+    data = test_mongo_connector.search_avocados(filters)
+    assert len(data) == 2
+
+    filters = {"date": {"start": "2021-02-01", "end": "2021-03-01"}}
+    data = test_mongo_connector.search_avocados(filters)
+    assert len(data) == 2
+
+    filters = {"date": {"start": "2021-02-01", "end": "2021-03-01"}, "region": "San Francisco"}
+    data = test_mongo_connector.search_avocados(filters)
+    assert len(data) == 1
+
+    filters = {"region": "New York"}
+    data = test_mongo_connector.search_avocados(filters)
+    assert data is None
