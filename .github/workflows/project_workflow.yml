@@ -67,9 +67,9 @@ jobs:
       run: sleep 15
       
     - name: Test if API is running
-        run: |
-          curl http://localhost:5000/health
-
+      run: |
+        curl http://localhost:5000/health
+        
     - name: Run tests with coverage
       working-directory: ./flask-api
       run: pytest --cov=./ tests/
