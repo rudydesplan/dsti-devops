@@ -61,7 +61,7 @@ def test_post_endpoint_creates_new_avocado_document():
         "average_size_bags": 5,
         "date": "2023-01-01",
         "region": "West",
-        "season": "spring"
+        "season": "spring",
         "small_plu": 12345,
         "state": "California",
     }
