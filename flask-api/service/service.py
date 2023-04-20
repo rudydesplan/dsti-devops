@@ -128,68 +128,7 @@ class MongoConnector:
         return data
     else:
         return None
-    
-    #14 Get the average price of avocados for a specific region
-    def get_avg_price_by_region(self, region):
-    collection = self.db["avocados"]
-    result = collection.aggregate([
-        {"$match": {"region": region}},
-        {"$group": {"_id": None, "avg_price": {"$avg": "$price"}}}
-    ])
 
-    for r in result:
-        return r["avg_price"]
-    return None
-    
-    #15 Get avocados with a price above the given min_price
-    def get_avocados_price_above(self, min_price):
-    collection = self.db["avocados"]
-    data = list(collection.find({"price": {"$gt": min_price}}))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
-    
-    #16 Get avocados with a price below the given max_price
-    def get_avocados_price_below(self, max_price):
-    collection = self.db["avocados"]
-    data = list(collection.find({"price": {"$lt": max_price}}))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
-    
-    #17 Get the highest and lowest avocado prices for a specific region
-    def get_price_extremes_by_region(self, region):
-    collection = self.db["avocados"]
-    result = collection.aggregate([
-        {"$match": {"region": region}},
-        {"$group": {
-            "_id": None,
-            "min_price": {"$min": "$price"},
-            "max_price": {"$max": "$price"}
-        }}
-    ])
-
-    for r in result:
-        return {"region": region, "min_price": r["min_price"], "max_price": r["max_price"]}
-    return None
-    
-    #18 Get the total number of avocados sold in a specific region
-    def get_total_avocados_by_region(self, region):
-    collection = self.db["avocados"]
-    result = collection.aggregate([
-        {"$match": {"region": region}},
-        {"$group": {"_id": None, "total_avocados": {"$sum": "$total_volume"}}}
-    ])
-
-    for r in result:
-        return r["total_avocados"]
-    return None
 
 # Remplacez <username> et <password> par vos informations d'identification
 MONGODB_URI = "mongodb+srv://<dsti-devops>:<dsti-devops>@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
@@ -309,51 +248,6 @@ def get_avocados_by_date_range(start_date, end_date):
         return jsonify(avocados_data)
     else:
         abort(404, description="No avocados found within the specified date range.")   
-        
-#14 Get average price of avocados by region
-@app.route("/avocados/avg-price/region/<region>")
-def get_avg_price_by_region(region):
-    avg_price = mongo_connector.get_avg_price_by_region(region)
-    if avg_price is not None:
-        return jsonify({"region": region, "average_price": avg_price})
-    else:
-        abort(404, description="No avocados found for the specified region.")        
-        
-#15 Get avocados with a price above the given min_price        
-@app.route("/avocados/price-above/<float:min_price>")
-def get_avocados_price_above(min_price):
-    avocados_data = mongo_connector.get_avocados_price_above(min_price)
-    if avocados_data:
-        return jsonify(avocados_data)
-    else:
-        abort(404, description="No avocados found with a price higher than the specified value.")        
-
-#16 Get avocados with a price below the given max_price        
-@app.route("/avocados/price-below/<float:max_price>")
-def get_avocados_price_below(max_price):
-    avocados_data = mongo_connector.get_avocados_price_below(max_price)
-    if avocados_data:
-        return jsonify(avocados_data)
-    else:
-        abort(404, description="No avocados found with a price lower than the specified value.")
-
-#17 Get the highest and lowest avocado prices for a specific region
-@app.route("/avocados/price-extremes/region/<region>")
-def get_price_extremes_by_region(region):
-    price_extremes = mongo_connector.get_price_extremes_by_region(region)
-    if price_extremes:
-        return jsonify(price_extremes)
-    else:
-        abort(404, description="No avocados found for the specified region.")        
-        
-#18 Get the total number of avocados sold in a specific region
-@app.route("/avocados/total/region/<region>")
-def get_total_avocados_by_region(region):
-    total_avocados = mongo_connector.get_total_avocados_by_region(region)
-    if total_avocados is not None:
-        return jsonify({"region": region, "total_avocados": total_avocados})
-    else:
-        abort(404, description="No avocados found for the specified region.")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
