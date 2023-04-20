@@ -166,31 +166,31 @@ class MongoConnector:
     
     #18
     def search_avocados(self, filters):
-    query = {}
-    
-    if 'date' in filters:
-        query['date'] = {'$gte': filters['date'].get('start', ''), '$lte': filters['date'].get('end', '')}
-    
-    if 'region' in filters:
-        query['region'] = filters['region']
-    
-    if 'season' in filters:
-        query['season'] = filters['season']
-    
-    if 'small_plu' in filters:
-        query['small_plu'] = filters['small_plu']
-    
-    if 'state' in filters:
-        query['state'] = filters['state']
-    
-    collection = self.db['avocados']
-    data = list(collection.find(query))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
+        query = {}
+
+        if 'date' in filters:
+            query['date'] = {'$gte': filters['date'].get('start', ''), '$lte': filters['date'].get('end', '')}
+
+        if 'region' in filters:
+            query['region'] = filters['region']
+
+        if 'season' in filters:
+            query['season'] = filters['season']
+
+        if 'small_plu' in filters:
+            query['small_plu'] = filters['small_plu']
+
+        if 'state' in filters:
+            query['state'] = filters['state']
+
+        collection = self.db['avocados']
+        data = list(collection.find(query))
+        if data:
+            for item in data:
+                item["_id"] = str(item["_id"])
+            return data
+        else:
+            return None
 
 
 # Remplacez <username> et <password> par vos informations d'identification
