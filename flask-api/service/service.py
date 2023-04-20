@@ -44,36 +44,36 @@ class MongoConnector:
     
     #5 Get the total number of avocado documents in the collection
     def get_avocado_count(self):
-    collection = self.db["avocados"]
-    return collection.count_documents({})
+        collection = self.db["avocados"]
+        return collection.count_documents({})
     
     #6 Get all documents from a specified collection
     def get_table(self, collection_name):
-    collection = self.db[collection_name]
-    data = list(collection.find({}))
-    for item in data:
-        item["_id"] = str(item["_id"])
-    return data
+        collection = self.db[collection_name]
+        data = list(collection.find({}))
+        for item in data:
+            item["_id"] = str(item["_id"])
+        return data
 
     #7 Get a single document by its unique index from a specified collection
     def get_row(self, index, collection_name):
-    collection = self.db[collection_name]
-    row = collection.find_one({"unique_id": int(index)})
-    if row:
-        row["_id"] = str(row["_id"])
-        return row
-    else:
-        return None
+        collection = self.db[collection_name]
+        row = collection.find_one({"unique_id": int(index)})
+        if row:
+            row["_id"] = str(row["_id"])
+            return row
+        else:
+            return None
 
     #8 Insert a new row into the avocados collection
     def insert_row(self, row):
-    avocados_collection = self.db["avocados"]
-    num_docs = avocados_collection.count_documents({})
-    for key in row.keys():
-        if key not in self.columns:
-            raise ValueError(f"{key} is not a valid column name")
-    row["unique_id"] = num_docs
-    avocados_collection.insert_one(row)
+        avocados_collection = self.db["avocados"]
+        num_docs = avocados_collection.count_documents({})
+        for key in row.keys():
+            if key not in self.columns:
+                raise ValueError(f"{key} is not a valid column name")
+        row["unique_id"] = num_docs
+        avocados_collection.insert_one(row)
     
     #9 Modify the region value for avocado documents within a given index range
     def modify_region_for_indexes(self, start_index, end_index, new_region):
@@ -98,36 +98,36 @@ class MongoConnector:
     
     #11 Get avocados from a specific region
     def get_avocados_by_region(self, region):
-    collection = self.db["avocados"]
-    data = list(collection.find({"region": region}))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
+        collection = self.db["avocados"]
+        data = list(collection.find({"region": region}))
+        if data:
+            for item in data:
+                item["_id"] = str(item["_id"])
+            return data
+        else:
+            return None
     
     #12 Get avocados for a specific season
     def get_avocados_by_season(self, season):
-    collection = self.db["avocados"]
-    data = list(collection.find({"season": season}))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
+        collection = self.db["avocados"]
+        data = list(collection.find({"season": season}))
+        if data:
+            for item in data:
+                item["_id"] = str(item["_id"])
+            return data
+        else:
+            return None
     
     #13 Get avocados within a specific date range
     def get_avocados_by_date_range(self, start_date, end_date):
-    collection = self.db["avocados"]
-    data = list(collection.find({"date": {"$gte": start_date, "$lte": end_date}}))
-    if data:
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return data
-    else:
-        return None
+        collection = self.db["avocados"]
+        data = list(collection.find({"date": {"$gte": start_date, "$lte": end_date}}))
+        if data:
+            for item in data:
+                item["_id"] = str(item["_id"])
+            return data
+        else:
+            return None
 
 
 # Remplacez <username> et <password> par vos informations d'identification
