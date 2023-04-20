@@ -1,9 +1,21 @@
-version: '3'
+version: '3.8'
 
 services:
-  my_flask_app:
+  mongo:
+    image: "mongo:4.4"
+    container_name: "mongo"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: avocado_db
+      MONGO_INITDB_ROOT_USERNAME: dsti-devops
+      MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+  app:
     build: .
+    container_name: avocado_api
     ports:
       - "5000:5000"
-    volumes:
-      - ./datasets:/app/datasets
+    environment:
+      MONGODB_URI: "mongodb://dsti-devops:dsti-devops@mongo:27017/avocado_db?retryWrites=true&w=majority"
+    depends_on:
+      - mongo
