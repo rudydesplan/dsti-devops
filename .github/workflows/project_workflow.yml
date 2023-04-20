@@ -2,7 +2,7 @@ name: Flask API Test
 
 on:
   push:
-    branches: [ dev-mohamed, develop ]
+    branches: [ dev-rudy, develop ]
   pull_request:
     branches: [ main ]
 
@@ -17,11 +17,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.12'
 
     - name: Install dependencies
       working-directory: ./flask-api
-      run: pip install -r requirements.txt && python setup.py install
+      run: pip install --no-cache-dir -r requirements.txt && python setup.py install
 
     - name: Start Flask API
       working-directory: ./flask-api
