@@ -69,7 +69,6 @@ def test_post_endpoint_creates_new_avocado_document():
 
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
-    inserted_id = response.json().get("_id")
     
     # Make a GET request to retrieve the new document
     response_ = requests.get(endpoint_url)
@@ -84,10 +83,6 @@ def test_post_endpoint_creates_new_avocado_document():
         assert california_found, "California not found in the returned documents"
     except ValueError:
         assert False, "Response body is not valid JSON"
-    finally:
-        # Clean up the inserted data
-        if inserted_id:
-            requests.delete(f"{endpoint_url}/{inserted_id}")
 
 #2b Test POST endpoint with missing required fields
 def test_post_endpoint_with_missing_fields_returns_400():
