@@ -203,6 +203,13 @@ mongo_connector.create_unique_index("avocados")
 
 REQUIRED_AVOCADO_FIELDS = ["average_size_bags", "date", "region", "season", "small_plu", "state"]
 
+@app.errorhandler(404)
+def handle_not_found_error(error):
+    return jsonify({
+        "message": "Resource not found",
+        "error": str(error)
+    }), 404
+
 # Health check and status endpoint
 @app.route("/health", methods=['GET'])
 def health_check():
