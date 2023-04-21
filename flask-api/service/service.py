@@ -201,6 +201,8 @@ app = Flask(__name__)
 mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
 mongo_connector.create_unique_index("avocados")
 
+REQUIRED_AVOCADO_FIELDS = ["average_size_bags", "date", "region", "season", "small_plu", "state"]
+
 # Health check and status endpoint
 @app.route("/health", methods=['GET'])
 def health_check():
@@ -284,11 +286,18 @@ def add_avocado():
     data = request.get_json()
     if data is None:
         abort(400, description="No data provided for insertion.")
+
+    # Check for missing required fields
+    missing_fields = [field for field in REQUIRED_AVOCADO_FIELDS if field not in data]
+    if missing_fields:
+        abort(400, description=f"Missing required fields: {', '.join(missing_fields)}")
+
     try:
         mongo_connector.insert_row(data)
         return jsonify({"result": "success", "message": "New avocado entry added."}), 201
     except ValueError as e:
         abort(400, description=str(e))
+
 
 #11 Get avocado entries by region
 @app.route("/avocados/region/<region>", methods=['GET'])
