@@ -202,17 +202,17 @@ mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
 mongo_connector.create_unique_index("avocados")
 
 # Health check and status endpoint
-@app.route("/health")
+@app.route("/health", methods=['GET'])
 def health_check():
     return jsonify({"status": "OK", "message": "API is up and running"})
 
 # Render the home page
-@app.route("/")
+@app.route("/", methods=['GET'])
 def home():
     return render_template(template_name_or_list="index.html")
 
 #2 Prepare the dataset and insert/update the data in the MongoDB database.
-@app.route("/prepare")
+@app.route("/prepare", methods=['GET'])
 def prepare():
     preparation = AvocadoPrep(dataset_location=DATA_LOCATION)
     prepared_json = preparation.prepare(Json=True)
@@ -224,7 +224,7 @@ def prepare():
     return response.status
 
 # Get the prepared avocado data for a specific index        
-@app.route("/avocados/<index>")
+@app.route("/avocados/<index>", methods=['GET'])
 def prepare_row(index):
     index = int(index)
     data = pd.read_csv(DATA_LOCATION)
@@ -259,7 +259,7 @@ def update_avocado(unique_id):
         abort(404, description="Avocado with given unique_id not found.")
         
 #5 Get the total number of avocado documents in the collection
-@app.route("/avocados/count")
+@app.route("/avocados/count", methods=['GET'])
 def get_avocado_count():
     count = mongo_connector.get_avocado_count()
     return jsonify({"count": count})        
@@ -270,7 +270,7 @@ def get_avocados():
     return mongo_connector.get_table('avocados')
 
 #7 Get a single document by its unique index from the avocados collection
-@app.route("/avocados/row/<index>")
+@app.route("/avocados/row/<index>", methods=['GET'])
 def get_row(index):
     row = mongo_connector.get_row(index, 'avocados')
     if row:
@@ -291,7 +291,7 @@ def add_avocado():
         abort(400, description=str(e))
 
 #11 Get avocado entries by region
-@app.route("/avocados/region/<region>")
+@app.route("/avocados/region/<region>", methods=['GET'])
 def get_avocados_by_region(region):
     avocados_data = mongo_connector.get_avocados_by_region(region)
     if avocados_data:
@@ -300,7 +300,7 @@ def get_avocados_by_region(region):
         abort(404, description="No avocados found for the specified region.")
 
 #12 Get avocados for a specific season        
-@app.route("/avocados/season/<season>")
+@app.route("/avocados/season/<season>", methods=['GET'])
 def get_avocados_by_season(season):
     avocados_data = mongo_connector.get_avocados_by_season(season)
     if avocados_data:
@@ -309,7 +309,7 @@ def get_avocados_by_season(season):
         abort(404, description="No avocados found for the specified season.")        
         
 #13 Get avocado entries within a specific date range
-@app.route("/avocados/date-range/<start_date>/<end_date>")
+@app.route("/avocados/date-range/<start_date>/<end_date>", methods=['GET'])
 def get_avocados_by_date_range(start_date, end_date):
     avocados_data = mongo_connector.get_avocados_by_date_range(start_date, end_date)
     if avocados_data:
@@ -318,7 +318,7 @@ def get_avocados_by_date_range(start_date, end_date):
         abort(404, description="No avocados found within the specified date range.")   
 
 #14 Get the average size bags for a specific region      
-@app.route("/avocados/average-size-bags/<region>")
+@app.route("/avocados/average-size-bags/<region>", methods=['GET'])
 def get_average_size_bags_by_region(region):
     avg_size_bags = mongo_connector.get_average_size_bags_by_region(region)
     if avg_size_bags is not None:
@@ -327,13 +327,13 @@ def get_average_size_bags_by_region(region):
         abort(404, description="No data found for the specified region.")       
 
 #15 Get the count of avocados with a specific small PLU code
-@app.route("/avocados/small-plu/<small_plu>/count")
+@app.route("/avocados/small-plu/<small_plu>/count", methods=['GET'])
 def get_avocados_count_by_small_plu(small_plu):
     count = mongo_connector.get_avocados_count_by_small_plu(small_plu)
     return jsonify({"count": count})
 
 #16 Get avocado documents by state
-@app.route("/avocados/state/<state>")
+@app.route("/avocados/state/<state>", methods=['GET'])
 def get_avocados_by_state(state):
     avocados_data = mongo_connector.get_avocados_by_state(state)
     if avocados_data:
@@ -342,7 +342,7 @@ def get_avocados_by_state(state):
         abort(404, description="No avocados found for the specified state.")
         
 #17 Get the count of avocado documents for a specific season and region
-@app.route("/avocados/season/<season>/region/<region>/count")
+@app.route("/avocados/season/<season>/region/<region>/count", methods=['GET'])
 def get_avocados_count_by_season_and_region(season, region):
     count = mongo_connector.get_avocados_count_by_season_and_region(season, region)
     return jsonify({"count": count})
