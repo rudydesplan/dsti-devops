@@ -286,7 +286,7 @@ def add_avocado():
         abort(400, description="No data provided for insertion.")
     try:
         mongo_connector.insert_row(data)
-        return jsonify({"result": "success", "message": "New avocado entry added."})
+        return jsonify({"result": "success", "message": "New avocado entry added."}), 201
     except ValueError as e:
         abort(400, description=str(e))
 
