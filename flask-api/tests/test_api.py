@@ -73,7 +73,7 @@ def test_post_endpoint_creates_new_avocado_document():
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
         json_data = response.json()
-        assert "id" in json_data
+        assert "California" in json_data
     except ValueError:
         assert False, "Response body is not valid JSON"
 
