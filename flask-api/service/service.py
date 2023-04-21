@@ -287,6 +287,7 @@ def get_row(index):
     else:
         abort(404, description="Row not found")
 
+        #A checker plus tard
 #8 Add a new avocado entry with a POST request
 @app.route("/avocados", methods=["POST"])
 def add_avocado():
@@ -300,10 +301,12 @@ def add_avocado():
         abort(400, description=f"Missing required fields: {', '.join(missing_fields)}")
 
     try:
-        mongo_connector.insert_row(data)
-        return jsonify({"result": "success", "message": "New avocado entry added."}), 201
+        inserted_id = mongo_connector.insert_row(data)
+        inserted_row = mongo_connector.get_row(inserted_id, 'avocados')
+        return jsonify(inserted_row)
     except ValueError as e:
         abort(400, description=str(e))
+
 
 
 #11 Get avocado entries by region
