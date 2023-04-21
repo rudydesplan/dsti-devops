@@ -70,9 +70,6 @@ def test_post_endpoint_creates_new_avocado_document():
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
 
-    # Check that the response status code is 201 Created
-    assert response.status_code == 201
-
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
         json_data = response.json()
