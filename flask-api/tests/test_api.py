@@ -69,10 +69,14 @@ def test_post_endpoint_creates_new_avocado_document():
 
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
+    
+    # Make a GET request to retrieve the new document
+    response_ = requests.get(endpoint_url)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
-        json_data = response.json()
+        json_data = response_.json()
+        print(json_data)
         assert "California" in json_data
     except ValueError:
         assert False, "Response body is not valid JSON"
