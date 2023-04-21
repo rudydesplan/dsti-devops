@@ -41,14 +41,15 @@ def test_get_endpoint_with_invalid_id_returns_404():
 #1c Test GET endpoint with a non-existent document ID
 def test_get_endpoint_with_non_existent_document_returns_404():
     # Define the endpoint URL with a non-existent document ID
-    non_existent_id = 9999
-    endpoint_url = f"http://localhost:5000/avocados/{non_existent_id}"
+    non_existent_id = 'non-existent-uuid'
+    endpoint_url = f"http://localhost:5000/avocados/row/{non_existent_id}"
 
     # Make a GET request to the endpoint
     response = requests.get(endpoint_url)
 
     # Check that the response status code is 404 Not Found
     assert response.status_code == 404
+
 
     
 #2a Test POST endpoint for creating a new avocado document
