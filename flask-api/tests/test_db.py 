@@ -1,7 +1,7 @@
 import pytest
 import uuid
 from pymongo import MongoClient
-from main import MongoConnector, create_unique_id
+from main import MongoConnector
 
 # Utilisez une base de données de test pour éviter d'affecter la base de données de production
 MONGODB_TEST_URI = "mongodb://localhost:27017/test_db"
@@ -58,7 +58,7 @@ def test_upsert_data(test_mongo_connector):
     assert collection.count_documents({}) == 1
     
     document = collection.find_one({})
-    unique_id = create_unique_id(test_data[0])
+    unique_id = test_mongo_connector.generate_unique_id()
     
     assert document["unique_id"] == unique_id
 
@@ -95,7 +95,7 @@ def test_delete_data(test_mongo_connector):
         "state": "CA",
     }
 
-    unique_id = create_unique_id(test_data)
+    unique_id = test_mongo_connector.generate_unique_id()
     test_mongo_connector.upsert_data("test_avocados", [test_data])
     collection = test_mongo_connector.db["test_avocados"]
     assert collection.count_documents({}) == 1
