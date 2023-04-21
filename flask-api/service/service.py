@@ -63,7 +63,7 @@ class MongoConnector:
             row["_id"] = str(row["_id"])
             return row
         else:
-            return None
+            abort(404, description="Row not found")
 
     #8 Insert a new row into the avocados collection
     def insert_row(self, row):
