@@ -183,7 +183,7 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
     
     # Make a GET request to retrieve the new document
-    response_ = requests.get(endpoint_url)
+    response_ = requests.get(endpoint_url_with_id)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     json_data = response_.json()
@@ -194,6 +194,7 @@ def test_delete_endpoint_deletes_existing_avocado_document():
 
     # Test GET endpoint to confirm that the avocado document has been deleted
     response = requests.get(endpoint_url_with_id)
+    print(response)
 
     # Check that the response status code is 404 Not Found
     assert response.status_code == 404
