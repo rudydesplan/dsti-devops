@@ -4,6 +4,7 @@ import logging.config
 import pandas as pd
 import pytest
 
+from typing import Optional
 from unittest.mock import patch
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import (
