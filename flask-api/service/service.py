@@ -215,7 +215,7 @@ def prepare_row(unique_id):
         prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row_data, index=[0])).prepare(Json=True)
         return jsonify(prepared_row)
     else:
-        abort(404, description="Avocado with given unique_id
+        abort(404, description="Avocado with given unique_id not found")
 
 #3 Delete an avocado document using a unique ID    
 @app.route("/avocados/<unique_id>", methods=["DELETE"])
