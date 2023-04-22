@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:4.4
+        image: mongo:6.0
         ports:
           - 27017:27017
         env:
@@ -25,6 +25,7 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v4.6.0
+
       with:
         python-version: '3.9'
 
