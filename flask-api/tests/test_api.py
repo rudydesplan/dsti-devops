@@ -178,11 +178,11 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
-    print(response.content)
     assert response.status_code == 201  # Check if the POST request was successful
 
     created_avocado = response.json()
     unique_id = created_avocado["unique_id"]
+    print(unique_id)
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
 
     # Make a DELETE request to the endpoint
