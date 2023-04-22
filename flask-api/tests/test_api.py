@@ -164,8 +164,7 @@ def test_put_endpoint_with_non_existent_document_returns_404():
 #4a Test DELETE endpoint for deleting an existing avocado document
 def test_delete_endpoint_deletes_existing_avocado_document():
     # Define the endpoint URL
-    unique_id = 2
-    endpoint_url = f"http://localhost:5000/avocados/{unique_id}"
+    endpoint_url = "http://localhost:5000/avocados"
     
     # Define the avocado document data
     avocado_data = {
@@ -179,15 +178,20 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
+    assert response.status_code == 201  # Check if the POST request was successful
+
+    created_avocado = response.json()
+    unique_id = created_avocado["unique_id"]
+    endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
 
     # Make a DELETE request to the endpoint
-    response = requests.delete(endpoint_url)
+    response = requests.delete(endpoint_url_with_id)
 
     # Check that the response status code is 204 No Content
     assert response.status_code == 204
 
     # Test GET endpoint to confirm that the avocado document has been deleted
-    response = requests.get(endpoint_url)
+    response = requests.get(endpoint_url_with_id)
 
     # Check that the response status code is 404 Not Found
     assert response.status_code == 404
