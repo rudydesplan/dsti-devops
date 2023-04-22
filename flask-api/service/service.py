@@ -18,7 +18,7 @@ class MongoConnector:
     def upsert_data(self, collection_name, data):
         collection = self.db[collection_name]
         for item in data:
-            unique_id = self.generate_unique_id()
+            unique_id = str(uuid.uuid4())
             item["unique_id"] = unique_id
             collection.update_one({"unique_id": unique_id}, {"$set": item}, upsert=True)
             
