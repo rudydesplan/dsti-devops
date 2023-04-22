@@ -172,7 +172,6 @@ MONGODB_URI = "mongodb+srv://dsti-devops:dsti-devops@cluster0.piza0cu.mongodb.ne
 app = Flask(__name__)
 
 mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
-mongo_connector.create_unique_index("avocados")
 
 REQUIRED_AVOCADO_FIELDS = ["average_size_bags", "date", "region", "season", "small_plu", "state"]
 
