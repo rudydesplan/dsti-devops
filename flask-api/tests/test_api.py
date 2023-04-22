@@ -183,11 +183,10 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
     
     # Make a GET request to retrieve the new document
-    response = requests.get(endpoint_url)
+    response_ = requests.get(endpoint_url)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
-    try:
-        json_data = response.json()
+        json_data = response_.json()
         print(json_data)
 
     # Make a DELETE request to the endpoint
