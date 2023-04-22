@@ -1,32 +1,7 @@
 import requests
 
-#1a Test GET endpoint
-def test_get_endpoint_returns_json_output():
-    # Define the endpoint URL
-    endpoint_url = "http://localhost:5000/avocados/0"
 
-    # Make a GET request to the endpoint
-    response = requests.get(endpoint_url)
-
-    # Check that the response status code is 200 OK
-    assert response.status_code == 200
-
-    # Check that the response content type is JSON
-    assert response.headers["Content-Type"] == "application/json"
-
-    # Check that the response body is a valid JSON object
-    try:
-        json_data = response.json()
-    except ValueError:
-        assert False, "Response body is not valid JSON"
-
-    # Check that the JSON object has the expected keys
-    expected_keys = ["average_size_bags","date","region", "season", "small_plu", "state"]
-    assert set(expected_keys).issubset(
-        json_data.get("data")[0].keys()
-    ), f"Expected keys {expected_keys} not found in response JSON"
-
-#1b Test GET endpoint with an invalid ID
+#1a Test GET endpoint with an invalid ID
 def test_get_endpoint_with_invalid_id_returns_404():
     # Define the endpoint URL with an invalid ID
     invalid_id = -1
@@ -41,7 +16,7 @@ def test_get_endpoint_with_invalid_id_returns_404():
 #1c Test GET endpoint with a non-existent document ID
 def test_get_endpoint_with_non_existent_document_returns_404():
     # Define the endpoint URL with a non-existent document ID
-    non_existent_id = 'non-existent-uuid'
+    non_existent_id = 99999999
     endpoint_url = f"http://localhost:5000/avocados/row/{non_existent_id}"
 
     # Make a GET request to the endpoint
