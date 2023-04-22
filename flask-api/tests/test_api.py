@@ -182,20 +182,21 @@ def test_delete_endpoint_deletes_existing_avocado_document():
 
     created_avocado = response.json()
     unique_id = created_avocado["unique_id"]
-    print(unique_id)
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
+    print(endpoint_url_with_id)
 
     # Make a DELETE request to the endpoint
-    response = requests.delete(endpoint_url_with_id)
+    response_ = requests.delete(endpoint_url_with_id)
+    print(response_)
 
     # Check that the response status code is 204 No Content
-    assert response.status_code == 204
+    assert response_.status_code == 204
 
     # Test GET endpoint to confirm that the avocado document has been deleted
-    response = requests.get(endpoint_url_with_id)
+    response__ = requests.get(endpoint_url_with_id)
 
     # Check that the response status code is 404 Not Found
-    assert response.status_code == 404
+    assert response__.status_code == 404
 
 #4b Test DELETE endpoint with a non-existent document
 def test_delete_endpoint_with_non_existent_document_returns_404():
