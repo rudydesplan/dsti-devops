@@ -57,7 +57,7 @@ def test_post_endpoint_creates_new_avocado_document():
 
     # Define the data to be sent in the POST request
     avocado_data = {
-        "average_size_bags": 5,
+        "average_size_bags": 5.2,
         "date": "2023-01-01",
         "region": "West",
         "season": "spring",
@@ -166,7 +166,7 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     
     # Define the avocado document data
     avocado_data = {
-        "average_size_bags": 5,
+        "average_size_bags": 5.2,
         "date": "2023-01-01",
         "region": "West",
         "season": "spring",
@@ -183,10 +183,10 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
     
     # Make a GET request to retrieve the new document
-    response_ = requests.get(endpoint_url_with_id)
+    response = requests.get(endpoint_url_with_id)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
-    json_data = response_.json()
+    json_data = response.json()
     print(json_data)
 
     # Make a DELETE request to the endpoint
