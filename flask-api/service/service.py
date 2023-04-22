@@ -253,7 +253,7 @@ def prepare_row(index):
 def delete_avocado(unique_id):
     deleted_count = mongo_connector.delete_data("avocados", unique_id)
     if deleted_count > 0:
-        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} deleted."})
+        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} deleted."}),204
     else:
         abort(404, description="Avocado with given unique_id not found.")
 
@@ -306,7 +306,7 @@ def add_avocado():
     try:
         inserted_id = mongo_connector.insert_row(data)
         inserted_row = mongo_connector.get_row(inserted_id, 'avocados')
-        return jsonify(inserted_row)
+        return jsonify(inserted_row), 201
     except ValueError as e:
         abort(400, description=str(e))
 
