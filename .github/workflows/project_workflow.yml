@@ -84,25 +84,25 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
 
-#    - name: Login to GitHub Container Registry
-#     uses: docker/login-action@v2.1.0
-#     with:
-#       registry: ghcr.io
-#       username: ${{ github.actor }}
-#       password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Login to GitHub Container Registry
+     uses: docker/login-action@v2.1.0
+     with:
+       registry: ghcr.io
+       username: ${{ github.actor }}
+       password: ${{ secrets.GITHUB_TOKEN }}
 
     # Add Docker layer caching
-#   - name: Cache Docker layers
-#     uses: actions/cache@v3
-#     with:
-#       path: /tmp/.buildx-cache
-#       key: ${{ runner.os }}-buildx-${{ github.sha }}
-#       restore-keys: |
-#         ${{ runner.os }}-buildx-
+   - name: Cache Docker layers
+     uses: actions/cache@v3
+     with:
+       path: /tmp/.buildx-cache
+       key: ${{ runner.os }}-buildx-${{ github.sha }}
+       restore-keys: |
+         ${{ runner.os }}-buildx-
 
-#   - name: Build and push Docker image
-#     uses: docker/build-push-action@v4.0.0
-#     with:
-#       context: .
-#       push: true
-#       tags: ghcr.io/yourusername/yourrepository:${{ github.sha }}
+   - name: Build and push Docker image
+     uses: docker/build-push-action@v4.0.0
+     with:
+       context: .
+       push: true
+       tags: ghcr.io/yourusername/yourrepository:${{ github.sha }}
