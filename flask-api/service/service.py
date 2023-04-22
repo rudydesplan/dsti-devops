@@ -12,15 +12,7 @@ class MongoConnector:
     def __init__(self, uri, db_name):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
-        self.columns = ["unique_id", "average_size_bags", "date", "region", "season", "small_plu", "state"]
-        
-    def create_unique_index(self, collection_name):
-        collection = self.db[collection_name]
-        collection.create_index("unique_id", unique=True)    
-        
-    #1 Generates a unique ID for each avocado document
-    def generate_unique_id(self):
-        return str(uuid.uuid4())
+        self.columns = ["unique_id", "average_size_bags", "date", "region", "season", "small_plu", "state"]   
     
     #2 Update or insert data into a specified collection
     def upsert_data(self, collection_name, data):
@@ -66,8 +58,6 @@ class MongoConnector:
         row["unique_id"] = unique_id
         avocados_collection.insert_one(row)
         return unique_id
-        
-    
 
     #7 Get a single document by its unique index from a specified collection
     def get_row(self, unique_id, collection_name):
@@ -78,30 +68,7 @@ class MongoConnector:
             return row
         else:
             abort(404, description="Row not found")
-
-    
-    
-    #9 Modify the region value for avocado documents within a given index range
-    def modify_region_for_indexes(self, start_index, end_index, new_region):
-        avocados_collection = self.db["avocados"]
-        num_docs = avocados_collection.count_documents({})
-        if start_index < 0 or end_index >= num_docs or start_index > end_index:
-            raise ValueError("Invalid range for modification")
-        avocados_collection.update_many(
-            {"id": {"$gte": start_index, "$lte": end_index}},
-            {"$set": {"region": new_region}}
-        )
         
-    #10 Delete avocado documents within a given index range
-    def delete_rows_for_indexes(self, start_index, end_index):
-        avocados_collection = self.db["avocados"]
-        num_docs = avocados_collection.count_documents({})
-        if start_index < 0 or end_index >= num_docs or start_index > end_index:
-            raise ValueError("Invalid range for deletion")
-        avocados_collection.delete_many(
-            {"id": {"$gte": start_index, "$lte": end_index}}
-        )
-    
     #11 Get avocados from a specific region
     def get_avocados_by_region(self, region):
         collection = self.db["avocados"]
@@ -238,18 +205,17 @@ def prepare():
     response = jsonify(prepared_json)
     return response.status
 
-# Get the prepared avocado data for a specific index        
-@app.route("/avocados/<index>", methods=['GET'])
-def prepare_row(index):
-    index = int(index)
+# Get the prepared avocado data for a specific unique_id
+@app.route("/avocados/<unique_id>", methods=['GET'])
+def prepare_row(unique_id):
     data = pd.read_csv(DATA_LOCATION)
-    if index in range(data.shape[0]):
-        row = data.iloc[index].to_frame().T
-        preparation = AvocadoPrep(dataframe=row)
-        prepared_row = preparation.prepare(Json=True)
+    row = mongo_connector.get_row(unique_id, 'avocados')
+    if row:
+        row_data = {k: row[k] for k in self.columns if k != "unique_id"}
+        prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row_data, index=[0])).prepare(Json=True)
         return jsonify(prepared_row)
     else:
-        abort(404, description="Index out of range")
+        abort(404, description="Avocado with given unique_id
 
 #3 Delete an avocado document using a unique ID    
 @app.route("/avocados/<unique_id>", methods=["DELETE"])
@@ -312,8 +278,6 @@ def add_avocado():
         return jsonify(inserted_row), 201
     except ValueError as e:
         abort(400, description=str(e))
-
-
 
 #11 Get avocado entries by region
 @app.route("/avocados/region/<region>", methods=['GET'])
