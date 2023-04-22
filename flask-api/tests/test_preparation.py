@@ -4,6 +4,7 @@ import logging.config
 import pandas as pd
 import pytest
 
+from unittest.mock import patch
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import (
     AVOCADO_INPUT_COLUMNS,
@@ -116,8 +117,16 @@ def test_add_average_size_bags(sample_input):
     for i in range(len(sample_input)):
         assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)
 
+def mock_get_state(region: str) -> Optional[str]:
+    region_state_map = {
+        "Albany": "New York",
+        "Sacramento": "California",
+        "ChicagoWashignton": None
+    }
+    return region_state_map.get(region)        
 
-def test_add_region_and_state(sample_input):
+@patch("modules.preparation.utils.get_state", side_effect=mock_get_state)
+def test_add_region_and_state(sample_input, mock_get_state):
     prep = AvocadoPrep(dataframe=sample_input)
     prep.add_region_and_state()
     result = prep.df
@@ -127,7 +136,8 @@ def test_add_region_and_state(sample_input):
     assert result.at[2, "state"] is None
 
 
-def test_prepare_dataframe(sample_input, sample_output):
+@patch("modules.preparation.utils.get_state", side_effect=mock_get_state)
+def test_prepare_dataframe(sample_input, sample_output, mock_get_state):
     prep = AvocadoPrep(dataframe=sample_input)
     result_df = prep.prepare(Json=False)
     result_json = prep.prepare(Json=True)
@@ -135,9 +145,12 @@ def test_prepare_dataframe(sample_input, sample_output):
     assert result_df.equals(sample_output["df"])
     assert result_json == sample_output["json"]
 
+def test_prepare_csv(tmp_path, sample_input, sample_output):
+    # Save the sample_input DataFrame to a temporary CSV file
+    temp_csv = tmp_path / "temp_data.csv"
+    sample_input.to_csv(temp_csv, index=False)
 
-def test_prepare_csv(sample_output):
-    preparation = AvocadoPrep(dataset_location=DATA_LOCATION)
+    preparation = AvocadoPrep(dataset_location=temp_csv)
     prepared_json = preparation.prepare(Json=True)
 
     assert list(prepared_json["data"][0].keys()) == OUTPUT_COLUMN_NAMES
