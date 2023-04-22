@@ -69,11 +69,11 @@ def test_post_endpoint_creates_new_avocado_document():
     response = requests.post(endpoint_url, json=avocado_data)
     
     # Make a GET request to retrieve the new document
-    response_ = requests.get(endpoint_url)
+    response = requests.get(endpoint_url)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
-        json_data = response_.json()
+        json_data = response.json()
         print(json_data)
         
         # Check if "California" is in any of the "state" keys in the dictionaries
@@ -183,21 +183,21 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
     
     # Make a GET request to retrieve the new document
-    response_a = requests.get(endpoint_url)
+    response = requests.get(endpoint_url)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
-        json_data = response_a.json()
+        json_data = response.json()
         print(json_data)
 
     # Make a DELETE request to the endpoint
-    response_ = requests.delete(endpoint_url_with_id)
+    response = requests.delete(endpoint_url_with_id)
 
     # Test GET endpoint to confirm that the avocado document has been deleted
-    response__ = requests.get(endpoint_url_with_id)
+    response = requests.get(endpoint_url_with_id)
 
     # Check that the response status code is 404 Not Found
-    assert response__.status_code == 404
+    assert response.status_code == 404
 
 #4b Test DELETE endpoint with a non-existent document
 def test_delete_endpoint_with_non_existent_document_returns_404():
