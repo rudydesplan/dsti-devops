@@ -34,7 +34,9 @@ def get_state(region: str) -> Optional[str]:
         return None
 
     if location is not None:
-        return location.raw["address"]["state"]
+        state = location.raw["address"]["state"]
+        print(f"Region: {region}, State: {state}")  # Add this line for debugging
+        return state
 
 
 def generate_uuid():
