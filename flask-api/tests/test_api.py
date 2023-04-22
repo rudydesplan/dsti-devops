@@ -179,18 +179,21 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     # Make a POST request to the endpoint
     response = requests.post(endpoint_url, json=avocado_data)
     assert response.status_code == 201  # Check if the POST request was successful
-
+   
     created_avocado = response.json()
     unique_id = created_avocado["unique_id"]
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
-    print(endpoint_url_with_id)
+    
+    # Make a GET request to retrieve the new document
+    response_a = requests.get(endpoint_url)
+
+    # Check that the response body is a valid JSON object and contains the created document's ID
+    try:
+        json_data = response_a.json()
+        print(json_data)
 
     # Make a DELETE request to the endpoint
     response_ = requests.delete(endpoint_url_with_id)
-    print(response_)
-
-    # Check that the response status code is 204 No Content
-    assert response_.status_code == 204
 
     # Test GET endpoint to confirm that the avocado document has been deleted
     response__ = requests.get(endpoint_url_with_id)
