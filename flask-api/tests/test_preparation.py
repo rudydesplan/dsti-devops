@@ -4,8 +4,6 @@ import logging.config
 import pandas as pd
 import pytest
 
-from typing import Optional
-from unittest.mock import patch
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import (
     AVOCADO_INPUT_COLUMNS,
@@ -116,18 +114,9 @@ def test_add_average_size_bags(sample_input):
     prep.add_average_size_bags()
     result = prep.df
     for i in range(len(sample_input)):
-        assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)
-
-def mock_get_state(region: str) -> Optional[str]:
-    region_state_map = {
-        "Albany": "New York",
-        "Sacramento": "California",
-        "ChicagoWashignton": None
-    }
-    return region_state_map.get(region)        
-
-@patch("modules.preparation.utils.get_state", side_effect=mock_get_state)
-def test_add_region_and_state(sample_input, mock_get_state):
+        assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)  
+        
+def test_add_region_and_state(sample_input):
     prep = AvocadoPrep(dataframe=sample_input)
     prep.add_region_and_state()
     result = prep.df
@@ -136,9 +125,7 @@ def test_add_region_and_state(sample_input, mock_get_state):
     assert result.at[1, "state"] == "California"
     assert result.at[2, "state"] is None
 
-
-@patch("modules.preparation.utils.get_state", side_effect=mock_get_state)
-def test_prepare_dataframe(sample_input, sample_output, mock_get_state):
+def test_prepare_dataframe(sample_input, sample_output):
     prep = AvocadoPrep(dataframe=sample_input)
     result_df = prep.prepare(Json=False)
     result_json = prep.prepare(Json=True)
