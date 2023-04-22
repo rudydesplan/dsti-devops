@@ -15,9 +15,9 @@ jobs:
         ports:
           - 27017:27017
         env:
-          MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
-          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
-          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+          MONGO_INITDB_DATABASE: avocado_db
+          MONGO_INITDB_ROOT_USERNAME: dsti-devops
+          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
 
     steps:
     - name: Checkout code
@@ -61,7 +61,7 @@ jobs:
     - name: Start Flask API
       working-directory: ./flask-api
       env:
-        MONGODB_URI: "mongodb://${{ secrets.MONGO_USERNAME }}:${{ secrets.MONGO_PASSWORD }}@localhost:27017/avocado_db?retryWrites=true&w=majority"
+        MONGODB_URI: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
       run: python service/service.py &
 
     - name: Wait for API to start up
@@ -93,7 +93,7 @@ jobs:
 
     # Add Docker layer caching
 #   - name: Cache Docker layers
-#     uses: actions/cache@v2.1.8
+#     uses: actions/cache@v3
 #     with:
 #       path: /tmp/.buildx-cache
 #       key: ${{ runner.os }}-buildx-${{ github.sha }}
