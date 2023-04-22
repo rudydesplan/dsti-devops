@@ -16,7 +16,7 @@ jobs:
           - 27017:27017
         env:
           MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
-          MONGO_USERNAME: $MONGO_USERNAME
+          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
           MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
     steps:
