@@ -21,15 +21,15 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
     - name: Cache pip packages
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.8
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -78,13 +78,13 @@ jobs:
       run: pytest -v --cov=. tests/
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v3.1.3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true
 
 #    - name: Login to GitHub Container Registry
-#     uses: docker/login-action@v1
+#     uses: docker/login-action@v2.1.0
 #     with:
 #       registry: ghcr.io
 #       username: ${{ github.actor }}
@@ -92,7 +92,7 @@ jobs:
 
     # Add Docker layer caching
 #   - name: Cache Docker layers
-#     uses: actions/cache@v2
+#     uses: actions/cache@v2.1.8
 #     with:
 #       path: /tmp/.buildx-cache
 #       key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -100,7 +100,7 @@ jobs:
 #         ${{ runner.os }}-buildx-
 
 #   - name: Build and push Docker image
-#     uses: docker/build-push-action@v2
+#     uses: docker/build-push-action@v4.0.0
 #     with:
 #       context: .
 #       push: true
