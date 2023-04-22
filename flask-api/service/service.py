@@ -58,18 +58,21 @@ class MongoConnector:
     #8 Insert a new row into the avocados collection
     def insert_row(self, row):
         avocados_collection = self.db["avocados"]
-        num_docs = avocados_collection.count_documents({})
         for key in row.keys():
             if key not in self.columns:
                 raise ValueError(f"{key} is not a valid column name")
-        row["unique_id"] = num_docs
+
+        unique_id = str(uuid.uuid4())
+        row["unique_id"] = unique_id
         avocados_collection.insert_one(row)
-        return num_docs  # Return the unique_id after inserting the row
+        return unique_id
+        
+    
 
     #7 Get a single document by its unique index from a specified collection
-    def get_row(self, index, collection_name):
+    def get_row(self, unique_id, collection_name):
         collection = self.db[collection_name]
-        row = collection.find_one({"unique_id": int(index)})
+        row = collection.find_one({"unique_id": unique_id})
         if row:
             row["_id"] = str(row["_id"])
             return row
@@ -304,8 +307,8 @@ def add_avocado():
         abort(400, description=f"Missing required fields: {', '.join(missing_fields)}")
 
     try:
-        inserted_id = mongo_connector.insert_row(data)
-        inserted_row = mongo_connector.get_row(inserted_id, 'avocados')
+        unique_id = mongo_connector.insert_row(data)
+        inserted_row = mongo_connector.get_row(unique_id, 'avocados')
         return jsonify(inserted_row), 201
     except ValueError as e:
         abort(400, description=str(e))
