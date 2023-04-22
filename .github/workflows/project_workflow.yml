@@ -15,9 +15,9 @@ jobs:
         ports:
           - 27017:27017
         env:
-          MONGO_INITDB_DATABASE: avocado_db
-          MONGO_INITDB_ROOT_USERNAME: dsti-devops
-          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+          MONGO_INITDB_DATABASE: ${{ variables.MONGO_INITDB_DATABASE }}
+          MONGO_INITDB_ROOT_USERNAME: ${{ variables.MONGO_INITDB_ROOT_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
 
     steps:
     - name: Checkout code
@@ -78,10 +78,10 @@ jobs:
       run: pytest -v --cov=. tests/
 
     - name: Upload coverage to Codecov
-     uses: codecov/codecov-action@v3
-     with:
-       token: ${{ secrets.CODECOV_TOKEN }}
-       fail_ci_if_error: true
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
 
 #    - name: Login to GitHub Container Registry
 #     uses: docker/login-action@v1
