@@ -49,8 +49,6 @@ def test_get_endpoint_with_non_existent_document_returns_404():
 
     # Check that the response status code is 404 Not Found
     assert response.status_code == 404
-
-
     
 #2a Test POST endpoint for creating a new avocado document
 def test_post_endpoint_creates_new_avocado_document():
