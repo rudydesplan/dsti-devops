@@ -54,6 +54,17 @@ class MongoConnector:
         for item in data:
             item["_id"] = str(item["_id"])
         return data
+        
+    #8 Insert a new row into the avocados collection
+    def insert_row(self, row):
+        avocados_collection = self.db["avocados"]
+        num_docs = avocados_collection.count_documents({})
+        for key in row.keys():
+            if key not in self.columns:
+                raise ValueError(f"{key} is not a valid column name")
+        row["unique_id"] = num_docs
+        avocados_collection.insert_one(row)
+        return num_docs  # Return the unique_id after inserting the row
 
     #7 Get a single document by its unique index from a specified collection
     def get_row(self, index, collection_name):
@@ -65,15 +76,7 @@ class MongoConnector:
         else:
             abort(404, description="Row not found")
 
-    #8 Insert a new row into the avocados collection
-    def insert_row(self, row):
-        avocados_collection = self.db["avocados"]
-        num_docs = avocados_collection.count_documents({})
-        for key in row.keys():
-            if key not in self.columns:
-                raise ValueError(f"{key} is not a valid column name")
-        row["unique_id"] = num_docs
-        avocados_collection.insert_one(row)
+    
     
     #9 Modify the region value for avocado documents within a given index range
     def modify_region_for_indexes(self, start_index, end_index, new_region):
