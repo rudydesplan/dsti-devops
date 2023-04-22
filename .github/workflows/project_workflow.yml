@@ -2,7 +2,7 @@ name: Flask API Test
 
 on:
   push:
-    branches: [ dev-rudy, develop ]
+    branches: [ dev-rudy ]
   pull_request:
     branches: [ main ]
 
@@ -15,16 +15,17 @@ jobs:
         ports:
           - 27017:27017
         env:
-          MONGO_INITDB_DATABASE: avocado_db
-          MONGO_INITDB_ROOT_USERNAME: dsti-devops
-          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+          MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
+          MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.5.2
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v4.6.0
+
       with:
         python-version: '3.9'
 
@@ -60,7 +61,7 @@ jobs:
     - name: Start Flask API
       working-directory: ./flask-api
       env:
-        MONGODB_URI: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+        MONGODB_URI: "mongodb://${{ secrets.MONGO_USERNAME }}:${{ secrets.MONGO_PASSWORD }}@localhost:27017/avocado_db?retryWrites=true&w=majority"
       run: python service/service.py &
 
     - name: Wait for API to start up
@@ -77,14 +78,14 @@ jobs:
       working-directory: ./flask-api
       run: pytest -v --cov=. tests/
 
-#    - name: Upload coverage to Codecov
-#     uses: codecov/codecov-action@v2
-#     with:
-#       token: ${{ secrets.CODECOV_TOKEN }}
-#       fail_ci_if_error: true
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3.1.3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
 
 #    - name: Login to GitHub Container Registry
-#     uses: docker/login-action@v1
+#     uses: docker/login-action@v2.1.0
 #     with:
 #       registry: ghcr.io
 #       username: ${{ github.actor }}
@@ -92,7 +93,7 @@ jobs:
 
     # Add Docker layer caching
 #   - name: Cache Docker layers
-#     uses: actions/cache@v2
+#     uses: actions/cache@v2.1.8
 #     with:
 #       path: /tmp/.buildx-cache
 #       key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -100,7 +101,7 @@ jobs:
 #         ${{ runner.os }}-buildx-
 
 #   - name: Build and push Docker image
-#     uses: docker/build-push-action@v2
+#     uses: docker/build-push-action@v4.0.0
 #     with:
 #       context: .
 #       push: true

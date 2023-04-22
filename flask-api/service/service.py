@@ -167,7 +167,7 @@ class MongoConnector:
 
 
 # Remplacez <username> et <password> par vos informations d'identification
-MONGODB_URI = "mongodb+srv://dsti-devops:dsti-devops@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
+MONGODB_URI = "mongodb+srv://{username}:{password}@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
 
 app = Flask(__name__)
 
@@ -245,10 +245,11 @@ def get_avocado_count():
     return jsonify({"count": count})        
         
 #6 Get all avocado documents from the 'avocados' collection
-@app.route("/avocados")
+@app.route("/avocados", methods=['GET'])
 def get_avocados():
-    return mongo_connector.get_table('avocados')
-
+    avocados_data = mongo_connector.get_table('avocados')
+    return jsonify(avocados_data)
+    
 #7 Get a single document by its unique index from the avocados collection
 @app.route("/avocados/row/<index>", methods=['GET'])
 def get_row(index):
