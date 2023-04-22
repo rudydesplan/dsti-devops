@@ -75,7 +75,7 @@ jobs:
         
     - name: Run tests with coverage
       working-directory: ./flask-api
-      run: pytest -v --cov=./flask-api/tests/test_api_db.py
+      run: pytest -v --cov=. tests/
 
 #    - name: Upload coverage to Codecov
 #     uses: codecov/codecov-action@v2
