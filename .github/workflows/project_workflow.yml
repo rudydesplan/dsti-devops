@@ -1,0 +1,107 @@
+name: Flask API Test
+
+on:
+  push:
+    branches: [ dev-rudy, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_DATABASE: avocado_db
+          MONGO_INITDB_ROOT_USERNAME: dsti-devops
+          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Cache pip packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      working-directory: ./flask-api
+      run: |
+        python -m pip install --upgrade pip
+        pip install --no-cache-dir -r requirements.txt && python setup.py install
+
+#   - name: Install linting dependencies
+#     run: pip install flake8
+
+#   - name: Run linting
+#     run: flake8 .
+
+#   - name: Install formatting dependencies
+#     run: pip install black
+
+#   - name: Check code formatting
+#     run: black --check .
+
+    - name: Install coverage dependencies
+      run: pip install pytest-cov
+
+    - name: Start Flask API
+      working-directory: ./flask-api
+      env:
+        MONGODB_URI: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+      run: python service/service.py &
+
+    - name: Wait for API to start up
+      run: sleep 5
+      
+    - name: Test if API is running
+      run: |
+        curl http://localhost:5000/health
+        
+    - name: Print directory structure
+      run: find . -type f
+        
+    - name: Run tests with coverage
+      working-directory: ./flask-api
+      run: pytest -v --cov=. tests/
+
+#    - name: Upload coverage to Codecov
+#     uses: codecov/codecov-action@v2
+#     with:
+#       token: ${{ secrets.CODECOV_TOKEN }}
+#       fail_ci_if_error: true
+
+#    - name: Login to GitHub Container Registry
+#     uses: docker/login-action@v1
+#     with:
+#       registry: ghcr.io
+#       username: ${{ github.actor }}
+#       password: ${{ secrets.GITHUB_TOKEN }}
+
+    # Add Docker layer caching
+#   - name: Cache Docker layers
+#     uses: actions/cache@v2
+#     with:
+#       path: /tmp/.buildx-cache
+#       key: ${{ runner.os }}-buildx-${{ github.sha }}
+#       restore-keys: |
+#         ${{ runner.os }}-buildx-
+
+#   - name: Build and push Docker image
+#     uses: docker/build-push-action@v2
+#     with:
+#       context: .
+#       push: true
+#       tags: ghcr.io/yourusername/yourrepository:${{ github.sha }}

@@ -1,0 +1,10 @@
+# Pytest and IDE
+.idea
+.pytest_cache
+__pycache__
+**/.pytest_cache
+
+# Setuptools
+dist
+build
+modules.egg-info

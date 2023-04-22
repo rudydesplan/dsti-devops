@@ -1,0 +1,9 @@
+# pytest cache
+.idea
+.pytest_cache
+__pycache__
+**/.pytest_cache
+
+# images and doc
+images
+README.md

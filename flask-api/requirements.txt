@@ -1,0 +1,7 @@
+flask
+pandas
+geopy
+pytest
+requests
+pymongo
+Flask-PyMongo

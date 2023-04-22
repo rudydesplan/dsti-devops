@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Avocados API</title>
+    <h1>Welcome to Avocados market</h1>
+</head>
+<body>
+
+<style>
+
+    form {
+        margin: 2em;
+    }
+    h1 {
+    text-align: center
+    }
+    label{
+        margin: 10px 50px 20px;
+    }
+    h1{
+        font-size: 48px;
+        text-shadow: -1px -1px #9df, 1px 1px #49d, -3px 0 4px #000;
+        font-family:"Segoe print", Arial, Helvetica, sans-serif;
+        color:#6bf;
+        padding:24px 32px 32px 32px;
+        font-weight:lighter;
+        -moz-box-shadow: 2px 2px 6px #888;
+        -webkit-box-shadow: 2px 2px 6px #888;
+        box-shadow:2px 2px 6px #888;
+        text-align:center;
+        display:inline;
+        line-height:150px;
+        background-image:url(https://img.freepik.com/free-vector/funny-avocados-doing-exercise_74855-6473.jpg?t=st=1655394667~exp=1655395267~hmac=82b21b20761ffb33276d20d92d2a3266a93f1eef3b8e051f74624cc37b03025e&w=1060);
+    }
+</style>
+
+
+
+
+<form id="myform">
+    <label>
+        <button>
+            <a href="/avocados">Prepare CSV file</a>
+        </button>
+    </label>
+
+    <label>
+        Prepare a row from CSV file:
+        <input id="avocadoNumber" type="number"  min="0" size="10" placeholder="id" onchange="myFunction()">
+
+        <button>
+            <a id='link' href="/avocados"> Prepare </a>
+        </button>
+    </label>
+
+
+</form>
+
+<script>
+    function myFunction() {
+        var val = document.getElementById("avocadoNumber").value ;
+        let link = document.getElementById("link");
+        link.href = "/avocados/" + val;
+    }
+
+    var val = document.getElementById("avocadoNumber").value ;
+    let link = document.getElementById("link");
+    link.href = link.href + "/" + val;
+</script>
+
+
+</body>
+</html>
