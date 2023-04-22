@@ -2,7 +2,7 @@ name: Flask API Test
 
 on:
   push:
-    branches: [ dev-rudy, develop ]
+    branches: [ dev-rudy ]
   pull_request:
     branches: [ main ]
 
