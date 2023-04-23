@@ -13,7 +13,7 @@ COPY modules ./modules
 COPY service ./service
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Install the application
 RUN python setup.py install
