@@ -117,12 +117,13 @@ def test_put_endpoint_updates_existing_avocado_document():
     try:
         json_data = response.json()
         print(json_data)
-        
-    # Check if "Florida" is in the "state" key of the dictionary
-    florida_found = json_data.get("state") == "Florida"
-    assert florida_found, "Florida not found in the returned document"
+
+        # Check if "Florida" is in the "state" key of the dictionary
+        florida_found = json_data.get("state") == "Florida"
+        assert florida_found, "Florida not found in the returned document"
     except ValueError:
         assert False, "Response body is not valid JSON"
+
 
 #3b Test PUT endpoint with invalid data
 def test_put_endpoint_with_invalid_data_returns_400():
