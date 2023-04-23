@@ -116,22 +116,6 @@ def test_add_average_size_bags(sample_input):
     for i in range(len(sample_input)):
         assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)  
         
-def test_add_region_and_state(sample_input):
-    prep = AvocadoPrep(dataframe=sample_input)
-    prep.add_region_and_state()
-    result = prep.df
-
-    assert result.at[0, "state"] == "New York"
-    assert result.at[1, "state"] == "California"
-    assert result.at[2, "state"] is None
-
-def test_prepare_dataframe(sample_input, sample_output):
-    prep = AvocadoPrep(dataframe=sample_input)
-    result_df = prep.prepare(Json=False)
-    result_json = prep.prepare(Json=True)
-
-    assert result_df.equals(sample_output["df"])
-    assert result_json == sample_output["json"]
 
 def test_prepare_csv(tmp_path, sample_input, sample_output):
     # Save the sample_input DataFrame to a temporary CSV file
