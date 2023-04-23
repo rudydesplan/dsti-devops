@@ -79,24 +79,47 @@ def test_post_endpoint_with_missing_fields_returns_400():
 #3a Test PUT endpoint for updating an existing avocado document
 def test_put_endpoint_updates_existing_avocado_document():
     # Define the endpoint URL
-    unique_id = 1
-    endpoint_url = f"http://localhost:5000/avocados/{unique_id}"
+    endpoint_url = "http://localhost:5000/avocados"
+    
+    # Define the avocado document data
+    avocado_data = {
+        "average_size_bags": 5.2,
+        "date": "2023-01-01",
+        "region": "West",
+        "season": "spring",
+        "small_plu": 12345.6,
+        "state": "California",
+    }
+    
+    # Make a POST request to the endpoint
+    response = requests.post(endpoint_url, json=avocado_data)
+    assert response.status_code == 201  # Check if the POST request was successful
+   
+    unique_id = created_avocado["unique_id"]
+    endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
 
     # Define the data to be sent in the PUT request
     updated_data = {
-        "average_size_bags": 10
+        "state": "Florida"
     }
 
     # Make a PUT request to the endpoint
-    response = requests.put(endpoint_url, json=updated_data)
+    response = requests.put(endpoint_url_with_id, json=updated_data)
 
     # Check that the response status code is 200 OK
     assert response.status_code == 200
+    
+    # Make a GET request to retrieve the new document
+    response = requests.get(endpoint_url_with_id)
 
-    # Check that the response body is a valid JSON object and contains the updated document
+    # Check that the response body is a valid JSON object and contains the created document's ID
     try:
         json_data = response.json()
-        assert json_data["data"]["average_size_bags"] == updated_data["average_size_bags"]
+        print(json_data)
+        
+        # Check if "Florida" is in any of the "state" keys in the dictionaries
+        florida_found = any(entry.get("state") == "Florida" for entry in json_data)
+        assert florida_found, "Florida not found in the returned documents"
     except ValueError:
         assert False, "Response body is not valid JSON"
 
