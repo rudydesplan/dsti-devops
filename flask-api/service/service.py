@@ -234,7 +234,7 @@ def update_avocado(unique_id):
     
     modified_count = mongo_connector.update_data("avocados", unique_id, data)
     if modified_count > 0:
-        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} updated."})
+        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} updated."}),200
     else:
         abort(404, description="Avocado with given unique_id not found.")
         
