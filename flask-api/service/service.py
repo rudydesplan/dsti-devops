@@ -224,19 +224,6 @@ def delete_avocado(unique_id):
         return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} deleted."}),204
     else:
         abort(404, description="Avocado with given unique_id not found.")
-
-#4 Update an avocado document using a unique ID and new data        
-@app.route("/avocados/<unique_id>", methods=["PUT"])
-def update_avocado(unique_id):
-    data = request.get_json()
-    if data is None:
-        abort(400, description="No data provided for update.")
-    
-    modified_count = mongo_connector.update_data("avocados", unique_id, data)
-    if modified_count > 0:
-        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} updated."}),200
-    else:
-        abort(404, description="Avocado with given unique_id not found.")
         
 #5 Get the total number of avocado documents in the collection
 @app.route("/avocados/count", methods=['GET'])
