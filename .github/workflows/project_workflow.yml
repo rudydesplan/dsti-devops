@@ -108,4 +108,4 @@ jobs:
       with:
         context: ./flask-api
         push: true
-        tags: ghcr.io/yourusername/yourrepository:${{ github.sha }}
+        tags: ghcr.io/rudydesplan/dsti-devops:${{ github.sha }}
