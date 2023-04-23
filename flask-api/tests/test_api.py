@@ -118,9 +118,9 @@ def test_put_endpoint_updates_existing_avocado_document():
         json_data = response.json()
         print(json_data)
         
-        # Check if "Florida" is in any of the "state" keys in the dictionaries
-        florida_found = any(entry.get("state") == "Florida" for entry in json_data)
-        assert florida_found, "Florida not found in the returned documents"
+    # Check if "Florida" is in the "state" key of the dictionary
+    florida_found = json_data.get("state") == "Florida"
+    assert florida_found, "Florida not found in the returned document"
     except ValueError:
         assert False, "Response body is not valid JSON"
 
