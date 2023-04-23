@@ -115,6 +115,7 @@ def test_put_endpoint_updates_existing_avocado_document():
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     try:
+        print(response.text)  # Add this line to print the response text
         json_data = response.json()
         print(json_data)
 
@@ -123,6 +124,7 @@ def test_put_endpoint_updates_existing_avocado_document():
         assert florida_found, "Florida not found in the returned document"
     except ValueError:
         assert False, "Response body is not valid JSON"
+
 
 
 #3b Test PUT endpoint with invalid data
