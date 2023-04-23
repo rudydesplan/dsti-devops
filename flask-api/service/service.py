@@ -337,4 +337,4 @@ def search_avocados():
         abort(404, description="No avocados found matching the specified filters.")
         
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=False, host="0.0.0.0")
