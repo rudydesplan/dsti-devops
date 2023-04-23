@@ -5,19 +5,19 @@ FROM python:3.12.0a7
 WORKDIR /app
 
 # Copy requirements file
-COPY requirements.txt
+COPY ./requirements.txt .
 
 # Copy the rest of the application code
-COPY setup.py
-COPY modules ./modules
-COPY service ./service
+COPY ./setup.py .
+COPY ./modules ./modules
+COPY ./service ./service
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Install the application
 RUN python setup.py install
-    
+
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
