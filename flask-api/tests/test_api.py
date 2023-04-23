@@ -95,6 +95,7 @@ def test_put_endpoint_updates_existing_avocado_document():
     response = requests.post(endpoint_url, json=avocado_data)
     assert response.status_code == 201  # Check if the POST request was successful
    
+    created_avocado = response.json()
     unique_id = created_avocado["unique_id"]
     endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
 
@@ -126,8 +127,26 @@ def test_put_endpoint_updates_existing_avocado_document():
 #3b Test PUT endpoint with invalid data
 def test_put_endpoint_with_invalid_data_returns_400():
     # Define the endpoint URL
-    unique_id = 1
-    endpoint_url = f"http://localhost:5000/avocados/{unique_id}"
+    # Define the endpoint URL
+    endpoint_url = "http://localhost:5000/avocados"
+    
+    # Define the avocado document data
+    avocado_data = {
+        "average_size_bags": 5.2,
+        "date": "2023-01-01",
+        "region": "West",
+        "season": "spring",
+        "small_plu": 12345.6,
+        "state": "California",
+    }
+    
+    # Make a POST request to the endpoint
+    response = requests.post(endpoint_url, json=avocado_data)
+    assert response.status_code == 201  # Check if the POST request was successful
+   
+    created_avocado = response.json()
+    unique_id = created_avocado["unique_id"]
+    endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
 
     # Define the data to be sent in the PUT request with invalid data
     updated_data = {
@@ -135,7 +154,7 @@ def test_put_endpoint_with_invalid_data_returns_400():
     }
 
     # Make a PUT request to the endpoint
-    response = requests.put(endpoint_url, json=updated_data)
+    response = requests.put(endpoint_url_with_id, json=updated_data)
 
     # Check that the response status code is 400 Bad Request
     assert response.status_code == 400
