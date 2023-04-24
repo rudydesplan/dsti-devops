@@ -22,8 +22,8 @@ jobs:
         runs-on: ubuntu-latest
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
-            - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
+            - uses: actions/checkout@v3.5.2
+            - uses: azure/login@v1
               name: Azure login
               with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
