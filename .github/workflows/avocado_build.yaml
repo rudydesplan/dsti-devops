@@ -1,30 +1,48 @@
 name: avocado build
 "on":
-    push:
-        branches:
-            - main
-    workflow_dispatch: {}
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
 env:
-    ACR_RESOURCE_GROUP: dsti
-    AZURE_CONTAINER_REGISTRY: dsticontainerregistry
-    CLUSTER_NAME: dsti-devops
-    CLUSTER_RESOURCE_GROUP: dsti
-    CONTAINER_NAME: dstidevopscontainer
-    DEPLOYMENT_MANIFEST_PATH: |
-        ./avocado-api.yaml
+  ACR_RESOURCE_GROUP: dsti
+  AZURE_CONTAINER_REGISTRY: dsticontainerregistry
+  CLUSTER_NAME: dsti-devops
+  CLUSTER_RESOURCE_GROUP: dsti
+  CONTAINER_NAME: dstidevopscontainer
+  DEPLOYMENT_MANIFEST_PATH: |
+    ./avocado-api.yaml
 jobs:
-    buildImage:
-        permissions:
-            contents: read
-            id-token: write
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
-              name: Azure login
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            - name: Build and push image to ACR
-              run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./flask-api/Dockerfile ./flask-api
+  buildImage:
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: azure/login@v1.4.3
+        name: Azure login
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      - name: Login to ACR
+        run: az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./flask-api
+          file: ./flask-api/Dockerfile
+          push: true
+          tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
