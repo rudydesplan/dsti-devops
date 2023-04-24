@@ -1,9 +1,10 @@
 name: avocado deploy
-"on":
-    push:
-        branches:
-            - main
-    workflow_dispatch: {}
+on:
+  workflow_run:
+    workflows:
+      - avocado build
+    types:
+      - completed
 env:
     ACR_RESOURCE_GROUP: dsti
     AZURE_CONTAINER_REGISTRY: dsticontainerregistry
@@ -19,6 +20,7 @@ jobs:
             contents: read
             id-token: write
         runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
             - uses: actions/checkout@v3
             - uses: azure/login@v1.4.3
