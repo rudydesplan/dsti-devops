@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $api
+  name: avocado-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: $api
+      app: avocado-api
   template:
     metadata:
       labels:
-        app: $api
+        app: avocado-api
     spec:
       containers:
-      - name: $api
-        image: desrudy/clockbox:latest
+      - name: dstidevopscontainer
+        image: avocado-image
         ports:
         - containerPort: 5000
         env:
         - name: MONGODB_CONNECTION_STRING
-          value: $MONGODB_CONNECTION_STRING
+          value: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: $api
+  name: avocado-api
 spec:
   selector:
-    app: $api
+    app: avocado-api
   ports:
     - protocol: TCP
       port: 80
