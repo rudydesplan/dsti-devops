@@ -15,9 +15,9 @@ jobs:
         ports:
           - 27017:27017
         env:
-          MONGO_INITDB_DATABASE: avocado_db
-          MONGO_INITDB_ROOT_USERNAME: dsti-devops
-          MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+          MONGO_INITDB_DATABASE: ${{ secrets.MONGO_DATABASE }}
+          MONGO_INITDB_ROOT_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
     steps:
     - name: Checkout code
