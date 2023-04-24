@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: avocado-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: avocado-api
+  template:
+    metadata:
+      labels:
+        app: avocado-api
+    spec:
+      containers:
+      - name: avocado-api
+        image: desrudy/clockbox:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: avocado-api
+spec:
+  selector:
+    app: avocado-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
