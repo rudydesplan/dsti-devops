@@ -1,4 +1,4 @@
-name: avocado
+name: avocado build
 "on":
     push:
         branches:
