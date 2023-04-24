@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: dstidevopscontainer
-        image: avocado-image
+        image: dsticontainerregistry.azurecr.io/dstidevopscontainer:<IMAGE_TAG>
         ports:
         - containerPort: 5000
         env:
