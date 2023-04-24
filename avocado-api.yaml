@@ -13,7 +13,7 @@ spec:
         app: avocado-api
     spec:
       containers:
-      - name: dsticontainerregistry.azurecr.io/dstidevopscontainer:latest
+      - name: dstidevopscontainer
         image: avocado-image
         ports:
         - containerPort: 5000
