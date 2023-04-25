@@ -40,12 +40,10 @@ jobs:
                 cluster-name: ${{ env.CLUSTER_NAME }}
                 resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
                 use-kubelogin: "true"
-            - name: Update manifest with image tag
-              run: sed -i 's|dsticontainerregistry.azurecr.io/dstidevopscontainer:<IMAGE_TAG>|${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}|' ${{ env.DEPLOYMENT_MANIFEST_PATH }}
             - uses: Azure/k8s-deploy@v4
               name: Deploys application
               with:
                 action: deploy
-                images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+                images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}
                 manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
                 namespace: avocado
