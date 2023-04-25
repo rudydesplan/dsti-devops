@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: dstidevopscontainer
-        image: dsticontainerregistry.azurecr.io/dstidevopscontainer:<IMAGE_TAG>
+        image: dsticontainerregistry.azurecr.io/dstidevopscontainer
         ports:
         - containerPort: 5000
         env:
