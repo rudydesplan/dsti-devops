@@ -1,10 +1,9 @@
-name: avocado deploy
-on:
-  workflow_run:
-    workflows:
-      - avocado build
-    types:
-      - completed
+name: avocado
+"on":
+    push:
+        branches:
+            - main
+    workflow_dispatch: {}
 env:
     ACR_RESOURCE_GROUP: dsti
     AZURE_CONTAINER_REGISTRY: dsticontainerregistry
@@ -14,16 +13,32 @@ env:
     DEPLOYMENT_MANIFEST_PATH: |
         ./avocado-api.yaml
 jobs:
+    buildImage:
+        permissions:
+            contents: read
+            id-token: write
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: azure/login@v1.4.3
+              name: Azure login
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            - name: Build and push image to ACR
+              run: az acr build --image ${{ env.CONTAINER_NAME }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./flask-api/Dockerfile ./flask-api
     deploy:
         permissions:
             actions: read
             contents: read
             id-token: write
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        needs:
+            - buildImage
         steps:
-            - uses: actions/checkout@v3.5.2
-            - uses: azure/login@v1
+            - uses: actions/checkout@v3
+            - uses: azure/login@v1.4.3
               name: Azure login
               with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
