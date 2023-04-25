@@ -20,6 +20,8 @@ spec:
         env:
         - name: MONGODB_CONNECTION_STRING
           value: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+      imagePullSecrets:
+        - name: acr-secret
 ---
 apiVersion: v1
 kind: Service
