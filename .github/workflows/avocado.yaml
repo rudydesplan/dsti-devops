@@ -26,8 +26,26 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            - name: Build and push image to ACR
-              run: az acr build --image ${{ env.CONTAINER_NAME }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./flask-api/Dockerfile ./flask-api
+            - name: Login to ACR
+              run: az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2.5.0
+            - name: Cache Docker layers
+              uses: actions/cache@v2.1.8
+              with:
+                path: /tmp/.buildx-cache
+                key: ${{ runner.os }}-buildx-${{ github.sha }}
+                restore-keys: |
+                  ${{ runner.os }}-buildx-
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v4.0.0
+              with:
+                context: ./flask-api
+                file: ./flask-api/Dockerfile
+                push: true
+                tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}
+                cache-from: type=local,src=/tmp/.buildx-cache
+                cache-to: type=local,dest=/tmp/.buildx-cache
     deploy:
         permissions:
             actions: read
