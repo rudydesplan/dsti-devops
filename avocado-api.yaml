@@ -15,8 +15,8 @@ spec:
         app: avocado-api
     spec:
       containers:
-      - name: dstidevopscontainer
-        image: dsticontainerregistry.azurecr.io/dstidevopscontainer
+      - name: dsticontainerregistry
+        image: dsticontainerregistry.azurecr.io/dsticontainerregistry
         ports:
         - containerPort: 5000
         env:
