@@ -5,11 +5,11 @@ name: avocado
             - main
     workflow_dispatch: {}
 env:
-    ACR_RESOURCE_GROUP: dsti
+    ACR_RESOURCE_GROUP: dstidevopsregistry
     AZURE_CONTAINER_REGISTRY: dsticontainerregistry
     CLUSTER_NAME: dsti-devops
     CLUSTER_RESOURCE_GROUP: dsti
-    CONTAINER_NAME: dstidevopscontainer
+    CONTAINER_NAME: dsticontainerregistry
     DEPLOYMENT_MANIFEST_PATH: |
         ./avocado-api.yaml
 jobs:
@@ -26,26 +26,8 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            - name: Login to ACR
-              run: az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v2.5.0
-            - name: Cache Docker layers
-              uses: actions/cache@v2.1.8
-              with:
-                path: /tmp/.buildx-cache
-                key: ${{ runner.os }}-buildx-${{ github.sha }}
-                restore-keys: |
-                  ${{ runner.os }}-buildx-
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v4.0.0
-              with:
-                context: ./flask-api
-                file: ./flask-api/Dockerfile
-                push: true
-                tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}
-                cache-from: type=local,src=/tmp/.buildx-cache
-                cache-to: type=local,dest=/tmp/.buildx-cache
+            - name: Build and push image to ACR
+              run: az acr build --image ${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.ACR_RESOURCE_GROUP }} -f ./flask-api/Dockerfile ./flask-api
     deploy:
         permissions:
             actions: read
@@ -77,6 +59,6 @@ jobs:
               name: Deploys application
               with:
                 action: deploy
-                images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}
+                images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}
                 manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
                 namespace: avocado
