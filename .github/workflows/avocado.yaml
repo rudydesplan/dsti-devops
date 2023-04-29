@@ -5,11 +5,11 @@ name: avocado
             - main
     workflow_dispatch: {}
 env:
-    ACR_RESOURCE_GROUP: dsti
+    ACR_RESOURCE_GROUP: dstidevopsregistry
     AZURE_CONTAINER_REGISTRY: dsticontainerregistry
     CLUSTER_NAME: dsti-devops
     CLUSTER_RESOURCE_GROUP: dsti
-    CONTAINER_NAME: dstidevopscontainer
+    CONTAINER_NAME: dsticontainerregistry
     DEPLOYMENT_MANIFEST_PATH: |
         ./avocado-api.yaml
 jobs:
