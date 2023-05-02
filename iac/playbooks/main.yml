@@ -1,0 +1,58 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update package list
+      apt:
+        update_cache: yes
+
+    - name: Install Python and pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Install git
+      apt:
+        name: git
+        state: present
+
+    - name: Clone Flask API repository
+      git:
+        repo: 'https://github.com/rudydesplan/dsti-devops.git'
+        dest: '/home/vagrant/dsti-devops'
+
+    - name: Install dependencies from requirements.txt
+      pip:
+        requirements: /home/vagrant/dsti-devops/flask-api/requirements.txt
+
+    - name: Install Gunicorn
+      pip:
+        name: gunicorn
+
+    - name: Start the Flask application using Gunicorn
+      shell: 'gunicorn -w 4 -b 0.0.0.0:5000 --chdir /home/vagrant/dsti-devops/flask-api/ "service.service:app"'
+      args:
+        creates: /home/vagrant/dsti-devops/flask-api/gunicorn.pid
+      become_user: vagrant
+      async: 1000
+      poll: 0
+      
+    - name: Install httplib2 for Ansible uri module
+      apt:
+        name: python3-httplib2
+        state: present
+        
+    - name: Check the health of the Flask API
+      uri:
+        url: "http://0.0.0.0:5000/health"
+        method: GET
+        status_code: 200
+        timeout: 5
+      register: health_check_result
+      ignore_errors: false
+      
+    - name: Display health check results
+      debug:
+        var: health_check_result
