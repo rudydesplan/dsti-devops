@@ -86,7 +86,8 @@ jobs:
               run: |
                 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
                 helm repo update
-                kubectl create ns prometheus
+                # Check if the 'prometheus' namespace exists and create it if it doesn't
+                kubectl get ns prometheus || kubectl create ns prometheus
                 helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus
             - uses: azure/login@v1.4.3
               name: Azure login
