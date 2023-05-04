@@ -10,8 +10,7 @@ env:
     CLUSTER_RESOURCE_GROUP: dsti2
     CLUSTER_NAME: avocado_k8s
     CONTAINER_NAME: avocado_k8s_container
-    DEPLOYMENT_MANIFEST_PATH: |
-        ./avocado-api.yaml
+    DEPLOYMENT_MANIFEST_PATH: ./avocado-api.yaml
 jobs:
     buildImage:
         permissions:
@@ -74,5 +73,5 @@ jobs:
               with:
                 action: deploy
                 images: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}
-                manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
+                manifests: ./avocado-api.yaml
                 namespace: avocado
