@@ -77,6 +77,13 @@ jobs:
               run: |
                 cd istio-1.17.2
                 ./bin/istioctl install --set profile=demo -y
+            - uses: azure/login@v1.4.3
+              name: Azure login
+              with:
+                creds: ${{ secrets.AZURE_CREDENTIALS }}    
+            - name: Log in to Azure Container Registry
+              run: |
+                az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}    
             - uses: Azure/k8s-deploy@v4
               name: Deploys application
               with:
