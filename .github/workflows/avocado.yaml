@@ -68,6 +68,15 @@ jobs:
                 cluster-name: ${{ env.CLUSTER_NAME }}
                 resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
                 use-kubelogin: "true"
+            - name: Download and extract Istio
+              run: |
+                ISTIO_VERSION=$(curl --silent --location --remote-name --remote-header-name "https://github.com/istio/istio/releases/latest" | grep -oP 'istio-\K[^"]+')
+                echo "ISTIO_VERSION=$ISTIO_VERSION" >> $GITHUB_ENV
+                curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} sh -
+            - name: Install Istio
+              run: |
+                cd istio-${{ env.ISTIO_VERSION }}
+                ./bin/istioctl install --set profile=demo -y
             - uses: Azure/k8s-deploy@v4
               name: Deploys application
               with:
