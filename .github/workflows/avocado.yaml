@@ -5,11 +5,11 @@ name: avocado
             - main
     workflow_dispatch: {}
 env:
-    ACR_RESOURCE_GROUP: dstidevopsregistry
-    AZURE_CONTAINER_REGISTRY: dsticontainerregistry
-    CLUSTER_NAME: dsti-devops
-    CLUSTER_RESOURCE_GROUP: dsti
-    CONTAINER_NAME: dsticontainerregistry
+    ACR_RESOURCE_GROUP: dsti
+    AZURE_CONTAINER_REGISTRY: avocadocontainerregistry
+    CLUSTER_RESOURCE_GROUP: dsti2
+    CLUSTER_NAME: avocado_k8s
+    CONTAINER_NAME: avocado_k8s_container
     DEPLOYMENT_MANIFEST_PATH: |
         ./avocado-api.yaml
 jobs:
@@ -23,9 +23,7 @@ jobs:
             - uses: azure/login@v1.4.3
               name: Azure login
               with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
             - name: Login to ACR
               run: az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
             - name: Set up Docker Buildx
@@ -59,9 +57,7 @@ jobs:
             - uses: azure/login@v1.4.3
               name: Azure login
               with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
             - uses: azure/use-kubelogin@v1
               name: Set up kubelogin for non-interactive login
               with:
