@@ -21,8 +21,8 @@ spec:
         app: avocado-api
     spec:
       containers:
-      - name: avocado_k8s_container
-        image: avocadocontainerregistry.azurecr.io/avocado_k8s_container
+      - name: avocado-k8s-container
+        image: avocadocontainerregistry.azurecr.io/avocado-k8s-container
         ports:
         - containerPort: 5000
           name: http
