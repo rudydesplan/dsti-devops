@@ -87,4 +87,4 @@ spec:
   host: avocado-api.avocado.svc.cluster.local
   trafficPolicy:
     tls:
-      mode: ISTIO_MUTUAL
+      mode: PERMISSIVE
