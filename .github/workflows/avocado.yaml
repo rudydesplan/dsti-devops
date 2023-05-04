@@ -89,9 +89,6 @@ jobs:
                 # Check if the 'prometheus' namespace exists and create it if it doesn't
                 kubectl get ns prometheus || kubectl create ns prometheus
                 helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus || helm upgrade prometheus prometheus-community/kube-prometheus-stack -n prometheus
-                # Wait for 10 minutes
-                sleep 600
-                kubectl port-forward -n prometheus prometheus-prometheus-kube-prometheus-prometheus-0 9090
             - uses: azure/login@v1.4.3
               name: Azure login
               with:
