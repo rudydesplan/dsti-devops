@@ -68,7 +68,7 @@ jobs:
                 cluster-name: ${{ env.CLUSTER_NAME }}
                 resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
                 use-kubelogin: "true"
-            - name: Download and extract Istio
+            - name: Download and install Istio
               run: |
                 ISTIO_VERSION=1.17.2
                 echo "ISTIO_VERSION=$ISTIO_VERSION" >> $GITHUB_ENV
@@ -89,6 +89,7 @@ jobs:
                 # Check if the 'prometheus' namespace exists and create it if it doesn't
                 kubectl get ns prometheus || kubectl create ns prometheus
                 helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus
+                kubectl port-forward -n prometheus prometheus-prometheus-kube-prometheus-prometheus-0 9090
             - uses: azure/login@v1.4.3
               name: Azure login
               with:
