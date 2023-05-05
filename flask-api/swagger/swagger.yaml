@@ -1,0 +1,80 @@
+swagger: "2.0"
+info:
+  title: Avocado API
+  description: API for managing avocado data
+  version: "1.0"
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: /
+schemes:
+  - http
+  - https
+tags:
+  - name: Avocado
+    description: Avocado operations
+definitions:
+  Avocado:
+    type: object
+    properties:
+      average_size_bags:
+        type: number
+      date:
+        type: string
+        format: date
+      region:
+        type: string
+      season:
+        type: string
+      small_plu:
+        type: string
+      state:
+        type: string
+  AvocadoList:
+    type: array
+    items:
+      $ref: "#/definitions/Avocado"
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
+  Count:
+    type: object
+    properties:
+      count:
+        type: integer
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+  HealthResponse:
+    type: object
+    properties:
+      status:
+        type: string
+      message:
+        type: string
+paths:
+  /avocados/{unique_id}:
+    delete:
+      summary: Delete Avocado by Unique ID
+      description: Deletes an avocado document using a unique ID
+      tags:
+        - Avocado
+      parameters:
+        - name: unique_id
+          in: path
+          description: The unique ID of the avocado to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the avocado document
+        '404':
+          description: The specified avocado document could not be found
