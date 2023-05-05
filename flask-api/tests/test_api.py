@@ -54,7 +54,9 @@ def test_post_endpoint_creates_new_avocado_document():
         print(json_data)
 
         # Check if "California" is in any of the "state" keys in the dictionaries
-        california_found = any(entry.get("state") == "California" for entry in json_data)
+        california_found = any(
+            entry.get("state") == "California" for entry in json_data
+        )
         assert california_found, "California not found in the returned documents"
     except ValueError:
         assert False, "Response body is not valid JSON"

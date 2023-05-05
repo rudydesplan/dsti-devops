@@ -104,7 +104,9 @@ def test_small_plu(sample_input):
     assert len(result["small_plu"]) == sample_input.shape[0]
     for i in range(len(sample_input)):
         assert result.at[i, "small_plu"] == min(
-            sample_input.at[i, "4046"], sample_input.at[i, "4225"], sample_input.at[i, "4770"]
+            sample_input.at[i, "4046"],
+            sample_input.at[i, "4225"],
+            sample_input.at[i, "4770"],
         )
 
 
@@ -113,7 +115,9 @@ def test_add_average_size_bags(sample_input):
     prep.add_average_size_bags()
     result = prep.df
     for i in range(len(sample_input)):
-        assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)
+        assert result.at[i, "average_size_bags"] == round(
+            float(sample_input.at[i, "total_bags"] / 3), 2
+        )
 
 
 def test_prepare_csv(tmp_path, sample_input, sample_output):

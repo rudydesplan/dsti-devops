@@ -6,14 +6,20 @@ from modules import MongoConnector
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import DATA_LOCATION
 
-# Remplacez <username> et <password> par vos informations d'identification
-# MONGODB_URI = "mongodb+srv://dsti-devops:dsti-devops@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
 MONGODB_URI = os.environ.get("MONGODB_URI")
+
 app = Flask(__name__)
 
 mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
 
-REQUIRED_AVOCADO_FIELDS = ["average_size_bags", "date", "region", "season", "small_plu", "state"]
+REQUIRED_AVOCADO_FIELDS = [
+    "average_size_bags",
+    "date",
+    "region",
+    "season",
+    "small_plu",
+    "state",
+]
 
 
 @app.errorhandler(404)
@@ -40,7 +46,7 @@ def prepare():
     prepared_json = preparation.prepare(Json=True)
 
     # Insérer ou mettre à jour les données JSON dans MongoDB
-    mongo_connector.upsert_data("avocados", prepared_json["data"])
+    mongo_connector.upsert_data("avocados", prepared_json.get("data", []))
 
     response = jsonify(prepared_json)
     return response.status
@@ -53,7 +59,9 @@ def prepare_row(unique_id):
     row = mongo_connector.get_row(unique_id, "avocados")
     if row:
         row_data = {k: row[k] for k in row.columns if k != "unique_id"}
-        prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row_data, index=[0])).prepare(Json=True)
+        prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row_data, index=[0])).prepare(
+            Json=True
+        )
         return jsonify(prepared_row)
     else:
         abort(404, description="Avocado with given unique_id not found")
@@ -64,7 +72,15 @@ def prepare_row(unique_id):
 def delete_avocado(unique_id):
     deleted_count = mongo_connector.delete_data("avocados", unique_id)
     if deleted_count > 0:
-        return jsonify({"result": "success", "message": f"Avocado with unique_id {unique_id} deleted."}), 204
+        return (
+            jsonify(
+                {
+                    "result": "success",
+                    "message": f"Avocado with unique_id {unique_id} deleted.",
+                }
+            ),
+            204,
+        )
     else:
         abort(404, description="Avocado with given unique_id not found.")
 
