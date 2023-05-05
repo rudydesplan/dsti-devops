@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from flask import abort
@@ -12,6 +13,9 @@ class MongoConnector:
 
     # 2 Update or insert data into a specified collection
     def upsert_data(self, collection_name, data):
+        if isinstance(data, str):
+            # If data is a string, assume it is a JSON string and convert it to a list of dictionaries.
+            data = json.loads(data)
         collection = self.db[collection_name]
         for item in data:
             unique_id = str(uuid.uuid4())

@@ -1,14 +1,14 @@
+import os
+
 import pandas as pd
 from flask import Flask, abort, jsonify, render_template, request
 from modules import MongoConnector
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import DATA_LOCATION
-import os
 
 # Remplacez <username> et <password> par vos informations d'identification
 # MONGODB_URI = "mongodb+srv://dsti-devops:dsti-devops@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
 MONGODB_URI = os.environ.get("MONGODB_URI")
-print("mongodb uri ------>", MONGODB_URI)
 app = Flask(__name__)
 
 mongo_connector = MongoConnector(MONGODB_URI, "avocado_db")
@@ -40,7 +40,7 @@ def prepare():
     prepared_json = preparation.prepare(Json=True)
 
     # Insérer ou mettre à jour les données JSON dans MongoDB
-    mongo_connector.upsert_data("avocados", prepared_json)
+    mongo_connector.upsert_data("avocados", prepared_json["data"])
 
     response = jsonify(prepared_json)
     return response.status

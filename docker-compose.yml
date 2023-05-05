@@ -10,6 +10,8 @@ services:
       MONGO_INITDB_DATABASE: avocado_db
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${MONGODB_PASSWORD}
       MONGO_INITDB_EXTRA_ARGS: --authenticationDatabase admin
     volumes:
       - ./mongo-init-scripts:/docker-entrypoint-initdb.d/
