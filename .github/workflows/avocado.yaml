@@ -19,7 +19,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
+            - uses: azure/login@v1.4.7
               name: Azure login
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -53,7 +53,7 @@ jobs:
             - buildImage
         steps:
             - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
+            - uses: azure/login@v1.4.7
               name: Azure login
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -90,7 +90,7 @@ jobs:
                 helm repo update
                 helm install prometheus prometheus-community/prometheus -n monitoring
                 helm install grafana grafana/grafana --namespace monitoring --set persistence.enabled=true --set persistence.storageClassName="default" --set adminPassword="avocado" --set service.type=LoadBalancer
-            - uses: azure/login@v1.4.3
+            - uses: azure/login@v1.4.7
               name: Azure login
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}    
