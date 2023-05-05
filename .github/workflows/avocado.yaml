@@ -84,11 +84,12 @@ jobs:
                 ./get_helm.sh
             - name: Define public Kubernetes chart repository in the Helm configuration
               run: |
+                kubectl get ns monitoring || kubectl create ns monitoring
                 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                helm repo add grafana https://grafana.github.io/helm-charts
                 helm repo update
-                # Check if the 'prometheus' namespace exists and create it if it doesn't
-                kubectl get ns prometheus || kubectl create ns prometheus
-                helm install prometheus prometheus-community/kube-prometheus-stack -n prometheus || helm upgrade prometheus prometheus-community/kube-prometheus-stack -n prometheus
+                helm install prometheus prometheus-community/prometheus -n monitoring
+                helm install grafana grafana/grafana --namespace monitoring --set persistence.enabled=true --set persistence.storageClassName="default" --set adminPassword="avocado" --set service.type=LoadBalancer
             - uses: azure/login@v1.4.3
               name: Azure login
               with:
