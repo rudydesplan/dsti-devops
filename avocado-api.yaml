@@ -91,14 +91,3 @@ spec:
   trafficPolicy:
     tls:
       mode: DISABLE
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: grafana-ssd
-provisioner: kubernetes.io/azure-disk
-parameters:
-  storageaccounttype: StandardSSD_LRS
-  kind: Managed
-reclaimPolicy: Delete
-allowVolumeExpansion: true
