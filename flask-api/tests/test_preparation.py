@@ -3,7 +3,6 @@ import logging.config
 
 import pandas as pd
 import pytest
-
 from modules.preparation import AvocadoPrep
 from modules.preparation.conf import (
     AVOCADO_INPUT_COLUMNS,
@@ -114,8 +113,8 @@ def test_add_average_size_bags(sample_input):
     prep.add_average_size_bags()
     result = prep.df
     for i in range(len(sample_input)):
-        assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)  
-        
+        assert result.at[i, "average_size_bags"] == round(float(sample_input.at[i, "total_bags"] / 3), 2)
+
 
 def test_prepare_csv(tmp_path, sample_input, sample_output):
     # Save the sample_input DataFrame to a temporary CSV file

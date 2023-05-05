@@ -3,10 +3,9 @@ import logging
 from typing import Union
 
 import pandas as pd
-from pandas import DataFrame
-
 from modules.preparation.conf import AVOCADO_INPUT_COLUMNS, OUTPUT_COLUMN_NAMES
 from modules.preparation.utils import get_season, get_state
+from pandas import DataFrame
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

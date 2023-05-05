@@ -2,7 +2,6 @@ import re
 
 import pandas as pd
 import pytest
-
 from modules.preparation import AvocadoPrep
 
 

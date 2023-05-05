@@ -36,7 +36,3 @@ def test_get_state_with_successful_request():
 
             # Verify that the geocode method was not called the second time (since the value was cached)
             mock_geocode_cached.assert_not_called()
-
-
-def test_generate_uuid():
-    assert generate_uuid() is not None

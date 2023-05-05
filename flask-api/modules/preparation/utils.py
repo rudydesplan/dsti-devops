@@ -37,7 +37,3 @@ def get_state(region: str) -> Optional[str]:
         state = location.raw["address"]["state"]
         print(f"Region: {region}, State: {state}")  # Add this line for debugging
         return state
-
-
-def generate_uuid():
-    return str(uuid.uuid4())
