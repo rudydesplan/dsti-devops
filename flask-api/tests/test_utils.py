@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from modules.preparation.utils import generate_uuid, get_season, get_state
+from modules.preparation.utils import get_season, get_state
 
 
 def test_get_season():
