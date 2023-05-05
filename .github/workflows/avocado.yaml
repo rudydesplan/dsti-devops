@@ -68,15 +68,15 @@ jobs:
                 cluster-name: ${{ env.CLUSTER_NAME }}
                 resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
                 use-kubelogin: "true"
-            - name: Download and install Istio
-              run: |
-                ISTIO_VERSION=1.17.2
-                echo "ISTIO_VERSION=$ISTIO_VERSION" >> $GITHUB_ENV
-                curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} sh -
-            - name: Install Istio
-              run: |
-                cd istio-1.17.2
-                ./bin/istioctl install --set profile=demo -y
+            #- name: Download and install Istio
+            # run: |
+            #   ISTIO_VERSION=1.17.2
+            #   echo "ISTIO_VERSION=$ISTIO_VERSION" >> $GITHUB_ENV
+            #   curl -L https://istio.io/downloadIstio | ISTIO_VERSION=${ISTIO_VERSION} sh -
+            #- name: Install Istio
+            # run: |
+            #   cd istio-1.17.2
+            #   ./bin/istioctl install --set profile=demo -y
             - name: Install Helm
               run: |
                 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
