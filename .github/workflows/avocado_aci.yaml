@@ -12,7 +12,7 @@ env:
     ACR_RESOURCE_GROUP: dsti
     AZURE_CONTAINER_REGISTRY: avocadocontainerregistry
     CONTAINER_NAME: avocadocontainer
-    DOCKER_COMPOSE_FILE: ./flask-api/docker-compose.yml
+    DOCKER_COMPOSE_FILE: ./docker-compose.yml
 jobs:
     buildImage:
         permissions:
