@@ -1,6 +1,10 @@
 import requests
 
-base_url = "http://127.0.0.1:5000"
+base_url = "http://localhost:5000"
+mongodb_uri = "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+
+
+# todo: authenticate
 # 1a Test GET endpoint with an invalid ID
 def test_get_endpoint_with_invalid_id_returns_404():
     # Define the endpoint URL with an invalid ID

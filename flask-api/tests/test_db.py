@@ -22,7 +22,7 @@ DATA = [
         "season": "Summer",
         "small_plu": "4225",
         "state": "CA",
-    }
+    },
 ]
 
 
@@ -75,7 +75,10 @@ def test_update_data(connector):
     data = {"state": "TX"}
     result = connector.update_data("test_collection", unique_id, data)
     assert result == 1
-    assert connector.db["test_collection"].find_one({"unique_id": unique_id})["state"] == "TX"
+    assert (
+        connector.db["test_collection"].find_one({"unique_id": unique_id})["state"]
+        == "TX"
+    )
 
     # Test updating a non-existent document
     result = connector.update_data("test_collection", "invalid_id", data)

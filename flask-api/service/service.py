@@ -4,7 +4,8 @@ import pandas as pd
 from flask import Flask, abort, jsonify, render_template, request
 from modules import MongoConnector
 from modules.preparation import AvocadoPrep
-from modules.preparation.conf import DATA_LOCATION
+
+DATA_LOCATION = os.environ.get("DATASET_LOCATION")
 
 MONGODB_URI = os.environ.get("MONGODB_URI")
 

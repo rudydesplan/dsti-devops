@@ -25,13 +25,18 @@ services:
       - "5000:5000"
     environment:
       MONGODB_URI: "mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:27017/avocado_db?retryWrites=true&w=majority"
+      DATASET_LOCATION: "/app/datasets/avocado.csv"
     depends_on:
       - mongo
     volumes:
-      - ./datasets:/app/datasets
+      - ./flask-api/datasets:/app/datasets
     networks:
       - backend
 
 networks:
   backend:
     driver: bridge
+
+volumes:
+  mongo-init-scripts:
+  app-datasets:
