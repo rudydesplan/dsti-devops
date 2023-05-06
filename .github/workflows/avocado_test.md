@@ -1,7 +1,7 @@
 # Flask API Test GitHub Action Workflow
 GitHub Actions workflow for testing a Flask API using a MongoDB backend.
 
-The workflow is triggered on `push` and `pull_request` events for the `main` branch.
+The workflow is triggered on `push` and `pull_request` events for `main`, `develop` and `feature` branches.
 
 ## Workflow Overview
 The workflow includes the following steps:
