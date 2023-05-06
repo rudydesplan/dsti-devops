@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
     v.name = "UbuntuVM"
   #   # Customize the amount of memory on the VM:
     v.memory = 8192
-	  v.cpus = 4
+    v.cpus = 4
   end
   #
   # View the documentation for the provider you are using for more
