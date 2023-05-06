@@ -1,4 +1,4 @@
-name: avocado
+name: avocado_k8s
 "on":
     push:
         branches:
