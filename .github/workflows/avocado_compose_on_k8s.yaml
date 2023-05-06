@@ -14,7 +14,7 @@ env:
     CONTAINER_NAME: avocadocontainer_compose_k8s
     CLUSTER_RESOURCE_GROUP: dsti
     CLUSTER_NAME: avocadocluster_compose_k8s
-    DOCKER_COMPOSE_FILE: ./flask-api/docker-compose.yml
+    DOCKER_COMPOSE_FILE: ./docker-compose.yml
 jobs:
     buildImage:
         permissions:
