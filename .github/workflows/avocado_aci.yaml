@@ -1,8 +1,12 @@
 name: avocado_aci
-"on":
-    push:
-        branches:
-            - deploy/aci
+
+on:
+  push:
+    branches:
+      - deploy/aci
+  pull_request:
+    branches:
+      - deploy/aci
     workflow_dispatch: {}
 env:
     ACR_RESOURCE_GROUP: dsti

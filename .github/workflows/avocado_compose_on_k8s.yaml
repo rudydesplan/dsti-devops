@@ -1,8 +1,12 @@
 name: avocado_compose_on_k8s
-"on":
-    push:
-        branches:
-            - deploy/compose_on_k8s
+
+on:
+  push:
+    branches:
+      - deploy/compose_on_k8s
+  pull_request:
+    branches:
+      - deploy/compose_on_k8s
     workflow_dispatch: {}
 env:
     ACR_RESOURCE_GROUP: dsti

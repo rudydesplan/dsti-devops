@@ -1,10 +1,18 @@
-name: Flask API Test - k8s
+name: Flask API Test
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - feature/*
+      - fix/*
+      - deploy/*
+      - develop
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - deploy/*
+      - develop
+      - main
 
 jobs:
   test:
@@ -61,7 +69,7 @@ jobs:
     - name: Start Flask API
       working-directory: ./flask-api
       env:
-        MONGODB_URI: "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+        MONGODB_URI: "mongodb://{{ secrets.MONGO_USERNAME }}:{{ secrets.MONGO_PASSWORD }}@localhost:27017/{{ secrets.MONGO_DATABASE }}?retryWrites=true&w=majority"
       run: python service/service.py &
 
     - name: Wait for API to start up
