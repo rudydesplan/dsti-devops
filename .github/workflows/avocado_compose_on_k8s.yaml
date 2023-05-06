@@ -83,4 +83,4 @@ jobs:
             - name: Convert Docker Compose to Kubernetes resources
               run: kompose convert -f ${{ env.DOCKER_COMPOSE_FILE }} -o k8s-resources.yaml
             - name: Deploy Kubernetes resources
-              run: kubectl apply -f k8s-resources.yaml
+              run: kubectl apply -f k8s-resources.yaml -n avocado
