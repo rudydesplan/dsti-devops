@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from flask import abort
@@ -8,10 +9,20 @@ class MongoConnector:
     def __init__(self, uri, db_name):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
-        self.columns = ["unique_id", "average_size_bags", "date", "region", "season", "small_plu", "state"]
+        self.columns = [
+            "unique_id",
+            "average_size_bags",
+            "date",
+            "region",
+            "season",
+            "small_plu",
+            "state",
+        ]
 
     # 2 Update or insert data into a specified collection
     def upsert_data(self, collection_name, data):
+        if isinstance(data, str):
+            data = json.loads(data)
         collection = self.db[collection_name]
         for item in data:
             unique_id = str(uuid.uuid4())
@@ -102,7 +113,10 @@ class MongoConnector:
     def get_average_size_bags_by_region(self, region):
         collection = self.db["avocados"]
         result = collection.aggregate(
-            [{"$match": {"region": region}}, {"$group": {"_id": None, "average": {"$avg": "$average_size_bags"}}}]
+            [
+                {"$match": {"region": region}},
+                {"$group": {"_id": None, "average": {"$avg": "$average_size_bags"}}},
+            ]
         )
         data = list(result)
         if data:
@@ -138,7 +152,10 @@ class MongoConnector:
         query = {}
 
         if "date" in filters:
-            query["date"] = {"$gte": filters["date"].get("start", ""), "$lte": filters["date"].get("end", "")}
+            query["date"] = {
+                "$gte": filters["date"].get("start", ""),
+                "$lte": filters["date"].get("end", ""),
+            }
 
         if "region" in filters:
             query["region"] = filters["region"]

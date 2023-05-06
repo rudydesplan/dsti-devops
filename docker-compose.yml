@@ -8,14 +8,30 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: avocado_db
-      MONGO_INITDB_ROOT_USERNAME: dsti-devops
-      MONGO_INITDB_ROOT_PASSWORD: dsti-devops
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_EXTRA_ARGS: --authenticationDatabase admin
+    volumes:
+      - ./mongo-init-scripts:/docker-entrypoint-initdb.d/
+    networks:
+      - backend
+
   app:
-    build: .
+    build: ./flask-api
     container_name: avocado_api
     ports:
       - "5000:5000"
     environment:
-      MONGODB_URI: "mongodb://dsti-devops:dsti-devops@mongo:27017/avocado_db?retryWrites=true&w=majority"
+      MONGODB_URI: "mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:27017/avocado_db?retryWrites=true&w=majority"
     depends_on:
       - mongo
+    volumes:
+      - ./datasets:/app/datasets
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

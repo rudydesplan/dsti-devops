@@ -24,7 +24,9 @@ def test_get_state_with_successful_request():
         assert result == "New York"
 
         # Verify that the geocode method was called with the expected arguments
-        mock_geocode.assert_called_once_with(query="New York + USA", addressdetails=True)
+        mock_geocode.assert_called_once_with(
+            query="New York + USA", addressdetails=True
+        )
 
         # Verify that the state value was cached by calling the function again with the same argument
         with patch("geopy.geocoders.Nominatim.geocode") as mock_geocode_cached:
