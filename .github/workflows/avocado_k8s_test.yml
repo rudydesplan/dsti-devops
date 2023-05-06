@@ -1,4 +1,4 @@
-name: Flask API Test
+name: Flask API Test - k8s
 
 on:
   push:
