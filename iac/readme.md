@@ -27,6 +27,10 @@ Additionally, a shell script is used to provision the VM, installing the followi
 - `software-properties-common`
 - Ansible (via the official PPA)
 
+This Vagrantfile uses Ansible as the provisioner to run the main playbook located at `provisioning/main.yml`.
+
+Ansible is configured to run in compatibility mode "auto", which means it will try to detect the version of Ansible installed on the host and use the appropriate syntax.
+
 To customize the VM settings, you can edit the Vagrantfile and adjust the values within the `config.vm.provider "virtualbox"` block.
 
 ## Accessing the VM
