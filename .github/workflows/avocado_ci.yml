@@ -95,7 +95,7 @@ jobs:
       run: echo ${{ env.MONGODB_URI }} & python service/service.py &
 
     - name: Wait for API to start up
-      run: sleep 5 & echo ${{ env.MONGODB_URI }}
+      run: sleep 5
       
     - name: Test if API is running
       run: |
@@ -106,6 +106,8 @@ jobs:
         
     - name: Run tests with coverage
       working-directory: ./flask-api
+      env:
+        MONGODB_URI: "mongodb+srv://${{ secrets.MONGODB_USERNAME }}:${{ secrets.MONGODB_PASSWORD }}@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
       run: |
         echo ${{ env.MONGODB_URI }} 
         echo $MONGODB_URI
