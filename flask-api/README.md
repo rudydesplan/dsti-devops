@@ -39,14 +39,14 @@ Send a GET (REST protocol) request using terminal from the root directory of the
 ```bash
 curl --header "Content-Type: application/json" \
   --request GET \
-  http://localhost:5000/avocados
+  http://localhost:5000/prepare
 ```
 
 You can check the logs while data is prepared
 
 ![index.html](../images/logs.png)
 
-It will output a JSON file, and insert the document to mongodb.
+It will prepare the CSV file, output the response status, and insert the JSON document to mongodb with the right format, using MongoConnector module.
 
 ![index.html](../images/ok.png)
 
@@ -60,7 +60,7 @@ replace <index> by the row number you want to prepare
 ```bash
 curl --header "Content-Type: application/json" \
   --request GET \
-  http://localhost:5000/avocados/<index>
+  http://localhost:5000/prepare/<index>
 ```
 
 It will output a JSON file with one element, and insert a new line to mongodb or (todo) update the line if existing, a preparation step should be added (affect a unique id to each row of the dataset, which will be the same in the database).
