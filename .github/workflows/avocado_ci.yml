@@ -92,10 +92,10 @@ jobs:
       env:
         MONGODB_URI: "mongodb+srv://${{ secrets.MONGODB_USERNAME }}:${{ secrets.MONGODB_PASSWORD }}@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
         DATASET_LOCATION: "./datasets/avocado.csv"
-      run: python service/service.py & echo ${{ env.MONGODB_URI }}
+      run: python service/service.py
 
     - name: Wait for API to start up
-      run: sleep 5 & echo ${{ env.DATASET_LOCATION }}
+      run: sleep 5 & echo ${{ env.MONGODB_URI }}
       
     - name: Test if API is running
       run: |
@@ -106,7 +106,10 @@ jobs:
         
     - name: Run tests with coverage
       working-directory: ./flask-api
-      run: echo ${{ env.DATASET_LOCATION }} & pytest -v --cov=. tests/ --cov-report=xml
+      run: |
+        echo ${{ env.MONGODB_URI }} 
+        echo $MONGODB_URI
+        pytest -v --cov=. tests/ --cov-report=xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3.1.3
