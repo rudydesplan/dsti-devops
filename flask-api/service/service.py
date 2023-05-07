@@ -54,15 +54,13 @@ def prepare():
 
 
 # Get the prepared avocado data for a specific unique_id
-@app.route("/avocados/<unique_id>", methods=["GET"])
-def prepare_row(unique_id):
+@app.route("/avocados/<index>", methods=["GET"])
+def prepare_row(index):
     data = pd.read_csv(DATA_LOCATION)
-    row = mongo_connector.get_row(unique_id, "avocados")
-    if row:
-        row_data = {k: row[k] for k in row.columns if k != "unique_id"}
-        prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row_data, index=[0])).prepare(
-            Json=True
-        )
+    row = data.iloc[index]
+    if not row.empty:
+        prepared_row = AvocadoPrep(dataframe=pd.DataFrame(row).T).prepare(Json=True)
+        mongo_connector.upsert_data("avocados", prepared_row.get("data", []))
         return jsonify(prepared_row)
     else:
         abort(404, description="Avocado with given unique_id not found")
