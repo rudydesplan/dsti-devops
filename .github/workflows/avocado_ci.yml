@@ -86,7 +86,7 @@ jobs:
     - name: Install coverage dependencies
       run: pip install pytest-cov
 
-    # Start API and set MONGODB_URI env variable from mongo test server on the cloud 
+    # Start API and set MONGODB_URI env variable from mongo test server on the cloud
     - name: Start Flask API
       working-directory: ./flask-api
       env:

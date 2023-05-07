@@ -28,10 +28,7 @@ DATA = [
 
 @pytest.fixture(scope="module")
 def connector():
-    username = os.environ.get("MONGODB_USERNAME")
-    password = os.environ.get("MONGODB_PASSWORD")
-    uri = f"mongodb://${username}:${password}@mongo:27017/avocado_db?retryWrites=true&w=majority"
-
+    uri = os.environ.get("MONGODB_URI")
     return MongoConnector(uri, "test_db")
 
 

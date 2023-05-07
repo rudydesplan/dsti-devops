@@ -2,6 +2,7 @@ import requests
 
 base_url = "http://localhost:5000"
 
+
 # 1a Test GET endpoint with an invalid ID
 def test_get_endpoint_with_invalid_id_returns_404():
     # Define the endpoint URL with an invalid ID
