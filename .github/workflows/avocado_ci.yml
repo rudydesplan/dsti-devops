@@ -92,7 +92,7 @@ jobs:
       env:
         MONGODB_URI: "mongodb+srv://${{ secrets.MONGODB_USERNAME }}:${{ secrets.MONGODB_PASSWORD }}@cluster0.piza0cu.mongodb.net/?retryWrites=true&w=majority"
         DATASET_LOCATION: "./datasets/avocado.csv"
-      run: python service/service.py
+      run: python service/service.py &
 
     - name: Wait for API to start up
       run: sleep 5 & echo ${{ env.MONGODB_URI }}
