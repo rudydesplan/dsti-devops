@@ -4,7 +4,6 @@ import os
 import pytest
 from modules import MongoConnector
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 
 # Test data
 DATA = [
@@ -31,9 +30,17 @@ DATA = [
 
 @pytest.fixture(scope="module")
 def connector():
-    uri = os.environ.get("MONGODB_URI")
+    try:
+        uri = os.environ.get("MONGODB_URI")
+        print("MongoDB URI: ", uri)
+    except Exception as e:
+        raise Exception("MongoDB URI not found in env variables")
+
+    # Remove comment for local testing with docker-compsose
+    # uri = "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+
     client = MongoClient(uri)
-    db_name = "test_db"
+    db_name = "avocado_db"
     client.drop_database(db_name)  # Drop the database if it already exists
     yield MongoConnector(uri, db_name)
     client.drop_database(db_name)  # Drop the database after running the tests
