@@ -3,7 +3,7 @@ import requests
 base_url = "http://localhost:5000"
 
 
-# 1a Test GET endpoint with an invalid ID
+# Test GET endpoint with an invalid ID
 def test_get_endpoint_with_invalid_id_returns_404():
     # Define the endpoint URL with an invalid ID
     invalid_id = -1
@@ -16,7 +16,7 @@ def test_get_endpoint_with_invalid_id_returns_404():
     assert response.status_code == 404
 
 
-# 1c Test GET endpoint with a non-existent document ID
+# Test GET endpoint with a non-existent document ID
 def test_get_endpoint_with_non_existent_document_returns_404():
     # Define the endpoint URL with a non-existent document ID
     non_existent_id = 99999999
@@ -29,7 +29,7 @@ def test_get_endpoint_with_non_existent_document_returns_404():
     assert response.status_code == 404
 
 
-# 2a Test POST endpoint for creating a new avocado document
+# Test POST endpoint for creating a new avocado document
 def test_post_endpoint_creates_new_avocado_document():
     # Define the endpoint URL
     endpoint_url = f"{base_url}/avocados"
@@ -64,7 +64,7 @@ def test_post_endpoint_creates_new_avocado_document():
         assert False, "Response body is not valid JSON"
 
 
-# 2b Test POST endpoint with missing required fields
+# Test POST endpoint with missing required fields
 def test_post_endpoint_with_missing_fields_returns_400():
     # Define the endpoint URL
     endpoint_url = f"{base_url}/avocados"
@@ -79,7 +79,7 @@ def test_post_endpoint_with_missing_fields_returns_400():
     assert response.status_code == 400
 
 
-# 4a Test DELETE endpoint for deleting an existing avocado document
+# Test DELETE endpoint for deleting an existing avocado document
 def test_delete_endpoint_deletes_existing_avocado_document():
     # Define the endpoint URL
     endpoint_url = f"{base_url}/avocados"
@@ -119,7 +119,7 @@ def test_delete_endpoint_deletes_existing_avocado_document():
     assert response.status_code == 404
 
 
-# 4b Test DELETE endpoint with a non-existent document
+# Test DELETE endpoint with a non-existent document
 def test_delete_endpoint_with_non_existent_document_returns_404():
     # Define the endpoint URL with a non-existent document ID
     non_existent_id = 9999
