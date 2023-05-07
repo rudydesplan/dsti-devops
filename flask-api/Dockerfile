@@ -27,7 +27,7 @@ FROM python:3.12.0a7
 # Set the working directory
 WORKDIR /app
 
-ENV DATASET_LOCATION="app/datasets/avocado.csv"
+ENV DATASET_LOCATION="datasets/avocado.csv"
 
 # Copy installed packages and application from the builder stage
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
