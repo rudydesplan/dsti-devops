@@ -1,19 +1,20 @@
 # Flask API web application
 
-It is a Flask web application exposing REST API that uses a custom Python module, to transform a CSV file or a Dataframe from raw avocados data to prepared and accurate JSON output. 
+It is a Flask web application exposing REST API that uses custom Python packages, to transform a CSV file or a Dataframe from raw avocados data to prepared and accurate JSON output. 
 
-Prepared data are also stored in [ database](https://redis.io/).
+Prepared data are also stored in [MongoDB database](https://www.mongodb.com/).
 
 ## Functionality
 
 1. Start the web application (interactive HTML page)
 2. Prepare a CSV file
 3. Prepare a single row from the CSV file
+4. CRUD operations on the database, multiple endpoints (see service.py)
 
 
 ## Usage
 
-This application uses Flask REST API and a *** database, it is dockerized.
+This application uses Flask REST API and a MongoDB database, it is dockerized.
 
 1. Start the web application
 
@@ -43,7 +44,7 @@ You can check the logs while data is prepared
 
 ![index.html](images/logs.png)
 
-It will output a JSON file.
+It will output a JSON file, and insert the document to mongodb.
 
 ![index.html](images/output.png)
 
@@ -60,7 +61,7 @@ curl --header "Content-Type: application/json" \
   http://localhost:5000/avocados/<index>
 ```
 
-It will output a JSON file with one element.
+It will output a JSON file with one element, and insert a new line to mongodb or (todo) update the line if existing, a preparation step should be added (affect a unique id to each row of the dataset, which will be the same in the database).
 
 ![index.html](images/output_row.png)
 
@@ -69,13 +70,13 @@ Another way to test your REST API is to use [Postman](https://www.postman.com/).
 
 ## Testing
 
-From the root directory of the project, run:
+Run tests of different levels (unit tests, intgration tests):
 
 ```
-pytest tests/ 
+pytest flask-api/tests/ 
 ```
 
-## Author
+## Authors
 
 Mohamed Hamiche
-m.hamiche99@gmail.com
+Desplan Rudy
