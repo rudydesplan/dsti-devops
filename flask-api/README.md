@@ -73,7 +73,7 @@ Click on Show avocados table, or send a GET request:
 
 ![index.html](../images/output.png)
 
-Another way to test your REST API is to use [Postman](https://www.postman.com/).
+Another way to test your REST API is to use [Postman](https://www.postman.com/) or the Swagger UI (non functional, todo).
 
 ## Testing
 
