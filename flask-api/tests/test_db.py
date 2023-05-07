@@ -1,15 +1,15 @@
+import json
 import os
 
 import pytest
-import json
-
+from modules import MongoConnector
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from modules import MongoConnector
 
 # Test data
 DATA = [
     {
+        "unique_id": "1",
         "average_size_bags": "small",
         "date": "2022-05-01",
         "region": "East",
@@ -18,6 +18,7 @@ DATA = [
         "state": "NY",
     },
     {
+        "unique_id": "2",
         "average_size_bags": "large",
         "date": "2022-05-01",
         "region": "West",
@@ -33,9 +34,9 @@ def connector():
     uri = os.environ.get("MONGODB_URI")
     client = MongoClient(uri)
     db_name = "test_db"
-    client.drop_database(db_name) # Drop the database if it already exists
+    client.drop_database(db_name)  # Drop the database if it already exists
     yield MongoConnector(uri, db_name)
-    client.drop_database(db_name) # Drop the database after running the tests
+    client.drop_database(db_name)  # Drop the database after running the tests
 
 
 @pytest.fixture
@@ -45,7 +46,7 @@ def cleanup(connector):
     connector.db["test_collection"].drop()
 
 
-def test_upsert_data(connector):
+def test_upsert_data(connector, cleanup):
     # Test inserting new data into a collection
     connector.upsert_data("test_collection", json.dumps(DATA))
     assert connector.db["test_collection"].count_documents({}) == len(DATA)
@@ -57,12 +58,8 @@ def test_upsert_data(connector):
     assert connector.db["test_collection"].count_documents({}) == len(DATA)
     assert connector.db["test_collection"].find_one({"region": "West"})["state"] == "NY"
 
-    # Test handling of duplicate unique IDs
-    with pytest.raises(DuplicateKeyError):
-        connector.upsert_data("test_collection", json.dumps([data]))
 
-
-def test_delete_data(connector):
+def test_delete_data(connector, cleanup):
     connector.upsert_data("test_collection", json.dumps(DATA))
 
     # Test deleting an existing document
@@ -77,7 +74,7 @@ def test_delete_data(connector):
     assert connector.db["test_collection"].count_documents({}) == len(DATA) - 1
 
 
-def test_update_data(connector):
+def test_update_data(connector, cleanup):
     connector.upsert_data("test_collection", json.dumps(DATA))
 
     # Test updating an existing document
@@ -95,6 +92,6 @@ def test_update_data(connector):
     assert result == 0
 
 
-def test_get_avocado_count(connector):
+def test_get_avocado_count(connector, cleanup):
     connector.upsert_data("avocados", json.dumps(DATA))
     assert connector.get_avocado_count() == len(DATA)

@@ -7,7 +7,7 @@ base_url = "http://localhost:5000"
 def test_get_endpoint_with_invalid_id_returns_404():
     # Define the endpoint URL with an invalid ID
     invalid_id = -1
-    endpoint_url = f"{base_url}/avocados/{invalid_id}"
+    endpoint_url = f"{base_url}/avocados/row/{invalid_id}"
 
     # Make a GET request to the endpoint
     response = requests.get(endpoint_url)
@@ -100,19 +100,19 @@ def test_delete_endpoint_deletes_existing_avocado_document():
 
     created_avocado = response.json()
     unique_id = created_avocado["unique_id"]
-    endpoint_url_with_id = f"{endpoint_url}/{unique_id}"
-
+    endpoint_url_delete_id = f"{endpoint_url}/{unique_id}"
+    enpoint_url_get_id = f"{endpoint_url}/row/{unique_id}"
     # Make a GET request to retrieve the new document
-    response = requests.get(endpoint_url_with_id)
+    response = requests.get(enpoint_url_get_id)
 
     # Check that the response body is a valid JSON object and contains the created document's ID
     print(response)
 
     # Make a DELETE request to the endpoint
-    response = requests.delete(endpoint_url_with_id)
+    response = requests.delete(endpoint_url_delete_id)
 
     # Test GET endpoint to confirm that the avocado document has been deleted
-    response = requests.get(endpoint_url_with_id)
+    response = requests.get(enpoint_url_get_id)
     print(response)
 
     # Check that the response status code is 404 Not Found

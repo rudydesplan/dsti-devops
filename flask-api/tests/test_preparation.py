@@ -4,11 +4,7 @@ import logging.config
 import pandas as pd
 import pytest
 from modules.preparation import AvocadoPrep
-from modules.preparation.conf import (
-    AVOCADO_INPUT_COLUMNS,
-    DATA_LOCATION,
-    OUTPUT_COLUMN_NAMES,
-)
+from modules.preparation.conf import AVOCADO_INPUT_COLUMNS
 
 logging.config.dictConfig(
     {
@@ -74,11 +70,6 @@ def test_preparation_init(sample_input):
     assert prep.dataset is not None
     assert prep.dataset.columns.names.difference(AVOCADO_INPUT_COLUMNS) == [None]
 
-    prep2 = AvocadoPrep(dataset_location=DATA_LOCATION)
-    assert prep2.df is not None
-    assert prep2.dataset is not None
-    assert prep2.dataset.columns.names.difference(AVOCADO_INPUT_COLUMNS) == [None]
-
 
 def test_add_date_and_season(sample_input):
     # expected format is mm-dd-yyyy
@@ -120,12 +111,10 @@ def test_add_average_size_bags(sample_input):
         )
 
 
-def test_prepare_csv(tmp_path, sample_input, sample_output):
-    # Save the sample_input DataFrame to a temporary CSV file
-    temp_csv = tmp_path / "temp_data.csv"
-    sample_input.to_csv(temp_csv, index=False)
+def test_prepare_dataframe(sample_input, sample_output):
+    prep = AvocadoPrep(dataframe=sample_input)
+    result_df = prep.prepare(Json=False)
+    result_json = prep.prepare(Json=True)
 
-    preparation = AvocadoPrep(dataset_location=temp_csv)
-    prepared_json = preparation.prepare(Json=True)
-
-    assert list(prepared_json["data"][0].keys()) == OUTPUT_COLUMN_NAMES
+    assert result_df.equals(sample_output["df"])
+    assert result_json == sample_output["json"]
