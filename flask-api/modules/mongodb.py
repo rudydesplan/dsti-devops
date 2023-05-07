@@ -29,11 +29,7 @@ class MongoConnector:
             if not item.get("unique_id"):
                 item["unique_id"] = str(uuid.uuid4())
             bulk_operations.append(
-                UpdateOne(
-                    {"unique_id": item["unique_id"]},
-                    {"$set": item},
-                    upsert=True
-                )
+                UpdateOne({"unique_id": item["unique_id"]}, {"$set": item}, upsert=True)
             )
         collection.bulk_write(bulk_operations)
 
