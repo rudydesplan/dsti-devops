@@ -4,7 +4,7 @@
   tasks:
     - name: Update package list
       apt:
-        update_cache: yes
+        update_cache: false
 
     - name: Install Python and pip
       apt:
