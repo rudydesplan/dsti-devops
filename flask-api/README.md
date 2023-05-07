@@ -25,7 +25,7 @@ docker-compose up
 ```
 
 
-It will start a web server available in your browser at http://localhost:5000.
+It will start a web server available in your browser at http://localhost:5000 and a mongodb instance initialised with user credentials provided in .env file.
 ![index.html](../images/index.png)
 
 2. Prepare a CSV file
