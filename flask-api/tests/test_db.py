@@ -2,6 +2,8 @@ import os
 
 import pytest
 import json
+
+from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from modules import MongoConnector
 
@@ -29,7 +31,18 @@ DATA = [
 @pytest.fixture(scope="module")
 def connector():
     uri = os.environ.get("MONGODB_URI")
-    return MongoConnector(uri, "test_db")
+    client = MongoClient(uri)
+    db_name = "test_db"
+    client.drop_database(db_name) # Drop the database if it already exists
+    yield MongoConnector(uri, db_name)
+    client.drop_database(db_name) # Drop the database after running the tests
+
+
+@pytest.fixture
+def cleanup(connector):
+    # Delete the test collection created in each test
+    yield
+    connector.db["test_collection"].drop()
 
 
 def test_upsert_data(connector):
