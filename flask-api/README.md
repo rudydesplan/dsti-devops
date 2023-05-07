@@ -6,22 +6,24 @@ Prepared data are also stored in [MongoDB database](https://www.mongodb.com/).
 
 ## Functionality
 
-1. Start the web application (interactive HTML page)
+1. Launch the application 
 2. Prepare a CSV file
-3. Prepare a single row from the CSV file
+3. Prepare a single row from the CSV file (metadata should be added to csv file in order to synchronize with database)
 4. CRUD operations on the database, multiple endpoints (see service.py)
 
 
 ## Usage
 
 This application uses Flask REST API and a MongoDB database, it is dockerized.
+After cloning the repository:
 
-1. Start the web application
+1. Launch the application: 
 
-From the root directory of the project run:
+From the root directory of the project, run:
 ```
 docker-compose up
 ```
+
 
 It will start a web server available in your browser at http://localhost:5000.
 ![index.html](../images/index.png)
@@ -46,7 +48,7 @@ You can check the logs while data is prepared
 
 It will output a JSON file, and insert the document to mongodb.
 
-![index.html](../images/output.png)
+![index.html](../images/ok.png)
 
 3. Prepare a single row from the CSV file
 
@@ -65,16 +67,29 @@ It will output a JSON file with one element, and insert a new line to mongodb or
 
 ![index.html](../images/output_row.png)
 
+4. Example of other operations: Retrieve all avocados data stored on MongoDB
+
+Click on Show avocados table, or send a GET request:
+
+![index.html](../images/output.png)
 
 Another way to test your REST API is to use [Postman](https://www.postman.com/).
 
 ## Testing
 
-Run tests of different levels (unit tests, intgration tests):
+Run tests of different levels (unit tests, intgration tests): 
 
 ```
 pytest flask-api/tests/ 
 ```
+
+The test: test_db.py will be run on the deployed test database on the cloud, if you want to run the tests on the local image of mongodb:
+
+remove the comment to the affectation of uri variable in connector fixture
+
+![index.html](../images/decoment.png)
+
+![index.html](../images/tests.png)
 
 ## Authors
 
