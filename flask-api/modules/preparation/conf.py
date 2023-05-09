@@ -1,4 +1,3 @@
-DATA_LOCATION = "datasets/avocado.csv"
 AVOCADO_INPUT_COLUMNS = [
     "date",
     "average_price",

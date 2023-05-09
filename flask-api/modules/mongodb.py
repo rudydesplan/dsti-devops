@@ -2,7 +2,7 @@ import json
 import uuid
 
 from flask import abort
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 
 
 class MongoConnector:
@@ -24,10 +24,14 @@ class MongoConnector:
         if isinstance(data, str):
             data = json.loads(data)
         collection = self.db[collection_name]
+        bulk_operations = []
         for item in data:
-            unique_id = str(uuid.uuid4())
-            item["unique_id"] = unique_id
-            collection.update_one({"unique_id": unique_id}, {"$set": item}, upsert=True)
+            if not item.get("unique_id"):
+                item["unique_id"] = str(uuid.uuid4())
+            bulk_operations.append(
+                UpdateOne({"unique_id": item["unique_id"]}, {"$set": item}, upsert=True)
+            )
+        collection.bulk_write(bulk_operations)
 
     # 3 Delete a document from a specified collection using a unique ID
     def delete_data(self, collection_name, unique_id):

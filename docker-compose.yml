@@ -28,10 +28,14 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./datasets:/app/datasets
+      - ./flask-api/datasets:/app/datasets
     networks:
       - backend
 
 networks:
   backend:
     driver: bridge
+
+volumes:
+  mongo-init-scripts:
+  app-datasets:
