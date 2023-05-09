@@ -35,7 +35,3 @@ services:
 networks:
   backend:
     driver: bridge
-
-volumes:
-  mongo-init-scripts:
-  app-datasets:
