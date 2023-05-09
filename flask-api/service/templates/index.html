@@ -56,7 +56,7 @@
         <input id="avocadoNumber" type="number"  min="0" size="10" placeholder="id" onchange="myFunction()">
 
         <button>
-            <a id='link' href="/avocados"> Prepare </a>
+            <a id='link' href="/prepare"> Prepare </a>
         </button>
     </label>
 
@@ -67,7 +67,7 @@
     function myFunction() {
         var val = document.getElementById("avocadoNumber").value ;
         let link = document.getElementById("link");
-        link.href = "/avocados/" + val;
+        link.href = "/prepare/" + val;
     }
 
     var val = document.getElementById("avocadoNumber").value ;

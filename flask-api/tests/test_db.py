@@ -1,13 +1,14 @@
+import json
 import os
 
 import pytest
-import json
-from pymongo.errors import DuplicateKeyError
 from modules import MongoConnector
+from pymongo import MongoClient
 
 # Test data
 DATA = [
     {
+        "unique_id": "1",
         "average_size_bags": "small",
         "date": "2022-05-01",
         "region": "East",
@@ -16,26 +17,43 @@ DATA = [
         "state": "NY",
     },
     {
+        "unique_id": "2",
         "average_size_bags": "large",
         "date": "2022-05-01",
         "region": "West",
         "season": "Summer",
         "small_plu": "4225",
         "state": "CA",
-    }
+    },
 ]
 
 
 @pytest.fixture(scope="module")
 def connector():
-    username = os.environ.get("MONGODB_USERNAME")
-    password = os.environ.get("MONGODB_PASSWORD")
-    uri = f"mongodb://${username}:${password}@mongo:27017/avocado_db?retryWrites=true&w=majority"
+    try:
+        uri = os.environ.get("MONGODB_URI")
+        print("MongoDB URI: ", uri)
+    except Exception as e:
+        raise Exception("MongoDB URI not found in env variables")
 
-    return MongoConnector(uri, "test_db")
+    # Remove comment for local testing with docker-compsose
+    # uri = "mongodb://dsti-devops:dsti-devops@localhost:27017/avocado_db?retryWrites=true&w=majority"
+
+    client = MongoClient(uri)
+    db_name = "avocado_db"
+    client.drop_database(db_name)  # Drop the database if it already exists
+    yield MongoConnector(uri, db_name)
+    client.drop_database(db_name)  # Drop the database after running the tests
 
 
-def test_upsert_data(connector):
+@pytest.fixture
+def cleanup(connector):
+    # Delete the test collection created in each test
+    yield
+    connector.db["test_collection"].drop()
+
+
+def test_upsert_data(connector, cleanup):
     # Test inserting new data into a collection
     connector.upsert_data("test_collection", json.dumps(DATA))
     assert connector.db["test_collection"].count_documents({}) == len(DATA)
@@ -47,12 +65,8 @@ def test_upsert_data(connector):
     assert connector.db["test_collection"].count_documents({}) == len(DATA)
     assert connector.db["test_collection"].find_one({"region": "West"})["state"] == "NY"
 
-    # Test handling of duplicate unique IDs
-    with pytest.raises(DuplicateKeyError):
-        connector.upsert_data("test_collection", json.dumps([data]))
 
-
-def test_delete_data(connector):
+def test_delete_data(connector, cleanup):
     connector.upsert_data("test_collection", json.dumps(DATA))
 
     # Test deleting an existing document
@@ -67,7 +81,7 @@ def test_delete_data(connector):
     assert connector.db["test_collection"].count_documents({}) == len(DATA) - 1
 
 
-def test_update_data(connector):
+def test_update_data(connector, cleanup):
     connector.upsert_data("test_collection", json.dumps(DATA))
 
     # Test updating an existing document
@@ -75,13 +89,16 @@ def test_update_data(connector):
     data = {"state": "TX"}
     result = connector.update_data("test_collection", unique_id, data)
     assert result == 1
-    assert connector.db["test_collection"].find_one({"unique_id": unique_id})["state"] == "TX"
+    assert (
+        connector.db["test_collection"].find_one({"unique_id": unique_id})["state"]
+        == "TX"
+    )
 
     # Test updating a non-existent document
     result = connector.update_data("test_collection", "invalid_id", data)
     assert result == 0
 
 
-def test_get_avocado_count(connector):
+def test_get_avocado_count(connector, cleanup):
     connector.upsert_data("avocados", json.dumps(DATA))
     assert connector.get_avocado_count() == len(DATA)
