@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from modules.preparation.utils import generate_uuid, get_season, get_state
+from modules.preparation.utils import get_season, get_state
 
 
 def test_get_season():
@@ -24,7 +24,9 @@ def test_get_state_with_successful_request():
         assert result == "New York"
 
         # Verify that the geocode method was called with the expected arguments
-        mock_geocode.assert_called_once_with(query="New York + USA", addressdetails=True)
+        mock_geocode.assert_called_once_with(
+            query="New York + USA", addressdetails=True
+        )
 
         # Verify that the state value was cached by calling the function again with the same argument
         with patch("geopy.geocoders.Nominatim.geocode") as mock_geocode_cached:
@@ -36,7 +38,3 @@ def test_get_state_with_successful_request():
 
             # Verify that the geocode method was not called the second time (since the value was cached)
             mock_geocode_cached.assert_not_called()
-
-
-def test_generate_uuid():
-    assert generate_uuid() is not None

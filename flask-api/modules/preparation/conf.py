@@ -1,4 +1,3 @@
-DATA_LOCATION = "datasets/avocado.csv"
 AVOCADO_INPUT_COLUMNS = [
     "date",
     "average_price",
@@ -14,4 +13,11 @@ AVOCADO_INPUT_COLUMNS = [
     "year",
     "region",
 ]
-OUTPUT_COLUMN_NAMES = ["date", "season", "small_plu", "average_size_bags", "region", "state"]
+OUTPUT_COLUMN_NAMES = [
+    "date",
+    "season",
+    "small_plu",
+    "average_size_bags",
+    "region",
+    "state",
+]

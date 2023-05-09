@@ -1,29 +1,32 @@
 # Flask API web application
 
-It is a Flask web application exposing REST API that uses a custom Python module, to transform a CSV file or a Dataframe from raw avocados data to prepared and accurate JSON output. 
+It is a Flask web application exposing REST API that uses custom Python packages, to transform a CSV file or a Dataframe from raw avocados data to prepared and accurate JSON output. 
 
-Prepared data are also stored in [ database](https://redis.io/).
+Prepared data are also stored in [MongoDB database](https://www.mongodb.com/).
 
 ## Functionality
 
-1. Start the web application (interactive HTML page)
+1. Launch the application 
 2. Prepare a CSV file
-3. Prepare a single row from the CSV file
+3. Prepare a single row from the CSV file (metadata should be added to csv file in order to synchronize with database)
+4. CRUD operations on the database, multiple endpoints (see service.py)
 
 
 ## Usage
 
-This application uses Flask REST API and a *** database, it is dockerized.
+This application uses Flask REST API and a MongoDB database, it is dockerized.
+After cloning the repository:
 
-1. Start the web application
+1. Launch the application: 
 
-From the root directory of the project run:
+From the root directory of the project, run:
 ```
 docker-compose up
 ```
 
-It will start a web server available in your browser at http://localhost:5000.
-![index.html](images/index.png)
+
+It will start a web server available in your browser at http://localhost:5000 and a mongodb instance initialised with user credentials provided in .env file.
+![index.html](../images/index.png)
 
 2. Prepare a CSV file
 
@@ -36,16 +39,16 @@ Send a GET (REST protocol) request using terminal from the root directory of the
 ```bash
 curl --header "Content-Type: application/json" \
   --request GET \
-  http://localhost:5000/avocados
+  http://localhost:5000/prepare
 ```
 
 You can check the logs while data is prepared
 
-![index.html](images/logs.png)
+![index.html](../images/logs.png)
 
-It will output a JSON file.
+It will prepare the CSV file, output the response status, and insert the JSON document to mongodb with the right format, using MongoConnector module.
 
-![index.html](images/output.png)
+![index.html](../images/ok.png)
 
 3. Prepare a single row from the CSV file
 
@@ -57,25 +60,38 @@ replace <index> by the row number you want to prepare
 ```bash
 curl --header "Content-Type: application/json" \
   --request GET \
-  http://localhost:5000/avocados/<index>
+  http://localhost:5000/prepare/<index>
 ```
 
-It will output a JSON file with one element.
+It will output a JSON file with one element, and insert a new line to mongodb or (todo) update the line if existing, a preparation step should be added (affect a unique id to each row of the dataset, which will be the same in the database).
 
-![index.html](images/output_row.png)
+![index.html](../images/output_row.png)
 
+4. Example of other operations: Retrieve all avocados data stored on MongoDB
 
-Another way to test your REST API is to use [Postman](https://www.postman.com/).
+Click on Show avocados table, or send a GET request:
+
+![index.html](../images/output.png)
+
+Another way to test your REST API is to use [Postman](https://www.postman.com/) or the Swagger UI (non functional, todo).
 
 ## Testing
 
-From the root directory of the project, run:
+Run tests of different levels (unit tests, intgration tests): 
 
 ```
-pytest tests/ 
+pytest flask-api/tests/ 
 ```
 
-## Author
+The test: test_db.py will be run on the deployed test database on the cloud, if you want to run the tests on the local image of mongodb:
+
+remove the comment to the affectation of uri variable in connector fixture
+
+![index.html](../images/decoment.png)
+
+![index.html](../images/tests.png)
+
+## Authors
 
 Mohamed Hamiche
-m.hamiche99@gmail.com
+Desplan Rudy

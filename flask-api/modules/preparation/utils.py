@@ -1,4 +1,3 @@
-import uuid
 from functools import lru_cache
 from typing import Optional
 
@@ -15,9 +14,19 @@ def get_season(date: str) -> Optional[str]:
     day = int(date[8:10])
     if (month == 12 and day >= 21) or (month <= 3 and day < 21):
         return "winter"
-    elif (month == 3 and day >= 21) or (month == 4) or (month == 5) or (month == 6 and day < 21):
+    elif (
+        (month == 3 and day >= 21)
+        or (month == 4)
+        or (month == 5)
+        or (month == 6 and day < 21)
+    ):
         return "spring"
-    elif (month == 6 and day >= 21) or (month == 7) or (month == 8) or (month == 9 and day < 21):
+    elif (
+        (month == 6 and day >= 21)
+        or (month == 7)
+        or (month == 8)
+        or (month == 9 and day < 21)
+    ):
         return "summer"
     else:
         return "fall"
@@ -37,7 +46,3 @@ def get_state(region: str) -> Optional[str]:
         state = location.raw["address"]["state"]
         print(f"Region: {region}, State: {state}")  # Add this line for debugging
         return state
-
-
-def generate_uuid():
-    return str(uuid.uuid4())

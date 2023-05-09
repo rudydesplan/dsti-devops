@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: "mongo:4.4"
+    container_name: "mongo"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: avocado_db
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_EXTRA_ARGS: --authenticationDatabase admin
+    volumes:
+      - ./mongo-init-scripts:/docker-entrypoint-initdb.d/
+    networks:
+      - backend
+
+  app:
+    build: ./flask-api
+    container_name: avocado_api
+    ports:
+      - "5000:5000"
+    environment:
+      MONGODB_URI: "mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongo:27017/avocado_db?retryWrites=true&w=majority"
+    depends_on:
+      - mongo
+    volumes:
+      - ./flask-api/datasets:/app/datasets
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

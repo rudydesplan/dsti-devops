@@ -2,7 +2,6 @@ import re
 
 import pandas as pd
 import pytest
-
 from modules.preparation import AvocadoPrep
 
 
@@ -29,10 +28,16 @@ def sample_input():
 
 
 def test_init_wrong_number_params(sample_input):
-    with pytest.raises(Exception, match=re.escape("Must specify exactly one of: `dataset_path` or `dataset`.")):
+    with pytest.raises(
+        Exception,
+        match=re.escape("Must specify exactly one of: `dataset_path` or `dataset`."),
+    ):
         AvocadoPrep(dataframe=sample_input, dataset_location="")
 
-    with pytest.raises(Exception, match=re.escape("Must specify exactly one of: `dataset_path` or `dataset`.")):
+    with pytest.raises(
+        Exception,
+        match=re.escape("Must specify exactly one of: `dataset_path` or `dataset`."),
+    ):
         AvocadoPrep()
 
 
