@@ -2,54 +2,40 @@
 This branch contains a GitHub Actions workflow for deploying an application to Azure Kubernetes Services (AKS) using docker-compose.
 
 ### Workflow Overview
-The deploy_on_k8s workflow is designed to run on an `ubuntu-latest` virtual environment and depends on the successful completion of the `buildImage` job.
-It uses a series of GitHub Actions and shell scripts to deploy the application to AKS.
+The `avocado_aci` workflow is designed to run on an `ubuntu-latest` virtual environment and is triggered on `push` and `pull_request` events to the `deploy/aci` branch. 
+It consists of two jobs: `buildImage` and `deploy_aci`.
 
-#### Main Steps
-1. Checkout repository
+## BuildImage Job
+The buildImage job is responsible for building and pushing a Docker image to Azure Container Registry (ACR).
 
-2. Login to Azure
+Main steps involved are:
 
-3. Set up kubelogin for non-interactive login
+1. Checkout repository: Using the `actions/checkout@v3` action, the repository contents are checked out to the runner.
 
-4. Get Kubernetes context
+2. Azure Login: The `azure/login@v1.4.3` action is used for logging into Azure using the credentials stored in the repository secrets.
 
-5. Install Kompose and kubectl
+3. Login to ACR: A shell command (`az acr login`) is run to login to the Azure Container Registry.
 
-6. Convert Docker Compose to Kubernetes resources
+4. Set up Docker Buildx: The `docker/setup-buildx-action@v2.5.0` action sets up Docker Buildx, an extension of Docker that enables full support of its features in CI.
 
-7. Deploy Kubernetes resources
+5. Cache Docker layers: The `actions/cache@v2.1.8 action is used to cache Docker layers. This helps to speed up subsequent Docker builds by reusing the cached layers.
 
-#### Permissions
-The following permissions are required for this workflow:
+6. Build and push Docker image: The `docker/build-push-action@v4.0.0` action is used to build the Docker image from the Dockerfile located in the `./flask-api` directory and push it to the Azure Container Registry.
 
-  `contents`: read
+## Deploy_aci Job
+The `deploy_aci` job is responsible for deploying the Docker image to Azure Container Instances (ACI).
 
-  `id-token`: write
+Main steps involved are:
 
-### How to Use
-Make sure you have a valid Azure subscription.
+1.  Checkout repository: The repository contents are checked out to the runner using actions/checkout@v3 action.
 
-1. Store your Azure credentials in the GitHub repository secrets as AZURE_CREDENTIALS.
+2.  Azure Login: The azure/login@v1.4.3 action is used for logging into Azure using the credentials stored in the repository secrets.
 
-2. Update the environment variables `CLUSTER_NAME`, `CLUSTER_RESOURCE_GROUP`, and `DOCKER_COMPOSE_FILE` in file to match your configuration.
+3.  Login to ACR: A shell command (az acr login) is run to login to the Azure Container Registry.
 
-3. Push the changes to your repository. The workflow will be triggered automatically when the `buildImage` job completes successfully.
+4.  Deploy to ACI: A series of Docker commands are run to create a Docker context, set it to the newly created context, and use Docker Compose to deploy the application to ACI.
 
-### Dependencies
-The workflow depends on the following GitHub Actions:
-  - actions/checkout@v3
+5.  Check ACI deployment status: The status of the ACI deployment is checked by running docker compose ps.
 
-  - azure/login@v1.4.3
 
-  - azure/use-kubelogin@v1
-
-  - azure/aks-set-context@v3
-
-In addition, the workflow requires the following tools to be installed:
-
-  - Kompose
-
-  - kubectl
-
-The installation of these tools is handled within the workflow script.
+This workflow utilizes environment variables and GitHub secrets to securely manage sensitive information such as Azure credentials and Azure Container Registry details.
