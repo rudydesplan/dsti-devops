@@ -38,7 +38,7 @@ jobs:
                 restore-keys: |
                   ${{ runner.os }}-buildx-
             - name: Build and push Docker image
-              uses: docker/build-push-action@v4.0.0
+              uses: docker/build-push-action@v4.2.1
               with:
                 context: ./flask-api
                 file: ./flask-api/Dockerfile
