@@ -1,5 +1,5 @@
 # Use the official Python base image
-FROM python:3.12.0a7 as builder
+FROM python:3.12.2 as builder
 
 # Set the working directory
 WORKDIR /app
@@ -22,7 +22,7 @@ RUN python setup.py install
 RUN find /app -name '*.pyc' -type f -delete
 
 # --- Stage 2: Runtime image ---
-FROM python:3.12.0a7
+FROM python:3.12.2
 
 # Set the working directory
 WORKDIR /app
