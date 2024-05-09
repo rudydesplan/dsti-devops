@@ -21,7 +21,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
+            - uses: azure/login@v1.6.1
               name: Azure login
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -54,7 +54,7 @@ jobs:
             - buildImage
         steps:
             - uses: actions/checkout@v3
-            - uses: azure/login@v1.4.3
+            - uses: azure/login@v1.6.1
               name: Azure login
               with:
                 creds: ${{ secrets.AZURE_CREDENTIALS }}
